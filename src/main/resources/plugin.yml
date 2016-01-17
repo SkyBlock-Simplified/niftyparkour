@@ -1,0 +1,48 @@
+name: ${project.name}
+version: ${project.version}
+website: ${project.url}
+author: ${author}
+
+main: ${project.groupId}.${project.artifactId}.${project.name}
+depend: [NiftyBukkit]
+
+commands:
+  adminmode:
+    description: Toggles a players administrator mode
+    usage: /<command> [player]
+    aliases: [admin, am]
+  checkpoint:
+    description: Manages the checkpoints
+    usage: /<command> <add|list|move|remove> <map>
+    aliases: [checkpoints, chk, ch]
+  map:
+    description: Manages the maps
+    usage: /<command> <add|list|lock|remove|setspawn|unlock> [map]
+    aliases: [maps]
+  spawn:
+    description: Teleports a player to spawn, or set spawnpoint
+    usage: /<command> [player]
+    aliases: [setspawn]
+
+permissions:
+  niftyparkour.*:
+    description: Gives access to all plugin features and commands
+    children:
+      niftyparkour.adminmode:
+        description: Allows you to administer features
+        children:
+          niftyparkour.adminmode.others:
+            description: Allows others to administer features
+      niftyparkour.map.*:
+        description: Allows you to access all map features
+        children:
+          niftyparkour.map:
+            description: Allows you to list map names
+          niftyparkour.map.manage.*:
+            children:
+              niftyparkour.map.manage:
+                description: Allows you to manage maps
+              niftyparkour.map.manage.lock:
+                description: Allows you prevent and allow access to maps
+              niftyparkour.map.manage.editor:
+                description: Allows you administer maps
