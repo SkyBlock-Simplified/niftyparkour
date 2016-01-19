@@ -9,7 +9,7 @@ import net.netcoding.niftyparkour.commands.Checkpoint;
 import net.netcoding.niftyparkour.commands.Map;
 import net.netcoding.niftyparkour.commands.Spawn;
 import net.netcoding.niftyparkour.listeners.Connections;
-import net.netcoding.niftyparkour.listeners.SignListener;
+import net.netcoding.niftyparkour.listeners.Signs;
 import org.bukkit.World;
 
 public class NiftyParkour extends BukkitPlugin {
@@ -47,7 +47,7 @@ public class NiftyParkour extends BukkitPlugin {
 		this.getLog().console("Registering Listeners");
 		new Connections(this);
 		this.signMonitor = new SignMonitor(this);
-		this.signMonitor.addListener(new SignListener(this), "spawn2", "warp2", "menu2", "checkpoint2");
+		this.signMonitor.addListener(new Signs(this), "spawn2", "warp2", "menu2", "checkpoint2");
 		this.signMonitor.start();
 	}
 
