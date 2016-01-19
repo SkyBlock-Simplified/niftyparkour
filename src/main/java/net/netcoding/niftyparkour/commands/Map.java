@@ -83,10 +83,7 @@ public class Map extends BukkitCommand {
 				maps.getMap(mapName).setLocked("lock".equals(action));
 				this.getLog().message(sender, "The map {{0}} has been {{1}ed}!", mapName, action);
 				// TODO: Update open inventories
-				return;
-			}
-
-			if (action.matches("^(add|create)$")) {
+			} else if (action.matches("^(add|create)$")) {
 				if (maps.checkExists(mapName)) {
 					this.getLog().error(sender, "Unable to create {{0}}, it already exists!", mapName);
 					return;
@@ -94,7 +91,7 @@ public class Map extends BukkitCommand {
 
 				maps.addMap(mapName);
 				this.getLog().message(sender, "The map {{0}} has been created!", mapName);
-			} else if (action.matches("^(remov|delete)$")) {
+			} else if (action.matches("^(remov|delet)e$")) {
 				// TODO: Request confirmation
 				//NiftyParkour.getMaps().removeMap(mapName);
 				//this.getLog().message(sender, "The map {{0}} has been removed!");
@@ -102,8 +99,12 @@ public class Map extends BukkitCommand {
 			} else if ("setspawn".equals(action)) {
 				NiftyParkour.getMaps().getMap(mapName).setSpawnPoint(profile.getOfflinePlayer().getPlayer().getLocation());
 				this.getLog().message(sender, "The spawn point for {{0}} has been set!", mapName);
-			} else
+			} else {
 				this.showUsage(sender);
+				return;
+			}
+
+			maps.getMap(mapName).save();
 		}
 	}
 
