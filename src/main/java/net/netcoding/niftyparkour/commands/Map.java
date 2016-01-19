@@ -18,7 +18,7 @@ public class Map extends BukkitCommand {
 	public Map(JavaPlugin plugin) {
 		super(plugin, "map");
 		this.setPlayerOnly();
-		this.editUsage(1, "list", "<map>");
+		this.editUsage(1, "list", "");
 	}
 
 	public static String parseMapName(String[] args, int index) {
