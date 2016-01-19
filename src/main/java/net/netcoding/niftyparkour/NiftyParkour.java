@@ -1,6 +1,7 @@
 package net.netcoding.niftyparkour;
 
 import net.netcoding.niftybukkit.minecraft.BukkitPlugin;
+import net.netcoding.niftybukkit.mojang.BukkitMojangProfile;
 import net.netcoding.niftybukkit.signs.SignMonitor;
 import net.netcoding.niftyparkour.cache.Config;
 import net.netcoding.niftyparkour.cache.Maps;
@@ -16,7 +17,7 @@ public class NiftyParkour extends BukkitPlugin {
 
 	private static transient Config PLUGIN_CONFIG;
 	private static transient Maps MAPS;
-	private transient SignMonitor signMonitor;
+	private static transient SignMonitor SIGN_MONITOR;
 
 	@Override
 	public void onEnable() {
@@ -46,14 +47,14 @@ public class NiftyParkour extends BukkitPlugin {
 
 		this.getLog().console("Registering Listeners");
 		new Connections(this);
-		this.signMonitor = new SignMonitor(this);
-		this.signMonitor.addListener(new Signs(this), "spawn2", "warp2", "menu2", "checkpoint2");
-		this.signMonitor.start();
+		SIGN_MONITOR = new SignMonitor(this);
+		SIGN_MONITOR.addListener(new Signs(this), "spawn2", "warp2", "menu2", "checkpoint2");
+		SIGN_MONITOR.start();
 	}
 
 	@Override
 	public void onDisable() {
-		this.signMonitor.stop();
+		SIGN_MONITOR.stop();
 	}
 
 	public static Maps getMaps() {
@@ -62,6 +63,10 @@ public class NiftyParkour extends BukkitPlugin {
 
 	public static Config getPluginConfig() {
 		return PLUGIN_CONFIG;
+	}
+
+	public static void sendCheckpointSignUpdate(BukkitMojangProfile profile) {
+		SIGN_MONITOR.sendSignUpdate(profile, "checkpoint2");
 	}
 
 }
