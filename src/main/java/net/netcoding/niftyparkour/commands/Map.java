@@ -33,13 +33,15 @@ public class Map extends BukkitCommand {
 		final String action = args[0];
 
 		if ("list".equals(action)) {
+			BukkitMojangProfile profile = NiftyBukkit.getMojangRepository().searchByUsername(sender.getName());
+			UserParkourData userData = UserParkourData.getCache(profile);
 			Set<String> mapNames = NiftyParkour.getMaps().getAllMaps().keySet();
 			List<String> mapList = new ArrayList<>();
 			String nameList = StringUtil.format("{{0}}", "No maps available!");
 
 			if (mapNames.size() > 0) {
 				for (String mapName : mapNames) {
-					boolean unlocked = !NiftyParkour.getMaps().getMap(mapName).isLocked();
+					boolean unlocked = userData.isAdminMode() || !NiftyParkour.getMaps().getMap(mapName).isLocked();
 					mapList.add(StringUtil.format("{0}{1}", (unlocked ? ChatColor.GREEN : ChatColor.RED), mapName));
 				}
 			} else

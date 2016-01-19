@@ -64,7 +64,7 @@ public class Checkpoint extends BukkitCommand {
 
 			if (map.getCheckpoints().size() > 0) {
 				for (int i = 0; i < map.getCheckpoints().size(); i++) {
-					boolean has = userData.getPlayerConfig().hasCheckpoint(map.getName(), i);
+					boolean has = userData.isAdminMode() || userData.getPlayerConfig().hasCheckpoint(map.getName(), i);
 					checkpointList.add(StringUtil.format("{0}{1}", (has ? ChatColor.GREEN : ChatColor.RED), i));
 				}
 			} else
