@@ -15,7 +15,8 @@ public class Connections extends BukkitListener {
 
 	@EventHandler
 	public void onPlayerPostLogin(PlayerPostLoginEvent event) {
-		new UserParkourData(this.getPlugin(), event.getProfile());
+		UserParkourData userData = new UserParkourData(this.getPlugin(), event.getProfile());
+		userData.teleportToSpawn();
 	}
 
 	@EventHandler
