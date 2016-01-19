@@ -25,11 +25,11 @@ import java.util.UUID;
 
 public class MapConfig extends BukkitConfig {
 
-	@Path("settings.locked")
+	@Path("locked")
 	private boolean locked = true;
 
-	@Path("settings.spawn-point")
-	private Location spawnPoint;
+	@Path("spawn-point")
+	private Location spawnPoint = Config.DEFAULT_SPAWN;
 
 	private transient volatile boolean updating = false;
 
