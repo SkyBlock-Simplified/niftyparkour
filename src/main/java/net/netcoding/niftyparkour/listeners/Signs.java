@@ -13,9 +13,9 @@ import net.netcoding.niftyparkour.cache.UserParkourData;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class SignListener extends BukkitHelper implements net.netcoding.niftybukkit.signs.SignListener {
+public class Signs extends BukkitHelper implements net.netcoding.niftybukkit.signs.SignListener {
 
-	public SignListener(JavaPlugin plugin) {
+	public Signs(JavaPlugin plugin) {
 		super(plugin);
 	}
 
@@ -50,6 +50,7 @@ public class SignListener extends BukkitHelper implements net.netcoding.niftybuk
 		if (!userData.isAdminMode()) {
 			this.getLog().error(player, "You must be in admin mode to manage signs!");
 			event.setCancelled(true);
+			return;
 		}
 
 		if ("checkpoint2".equals(event.getKey())) {
@@ -86,7 +87,7 @@ public class SignListener extends BukkitHelper implements net.netcoding.niftybuk
 		// Debug Testing
 		if (userData.isAdminMode()) {
 			for (String line : event.getLines())
-				this.getLog().error(player, line);
+				player.sendMessage(line);
 		}
 
 		try {
@@ -119,7 +120,7 @@ public class SignListener extends BukkitHelper implements net.netcoding.niftybuk
 			event.setLine(0, this.colorfy("Main Menu", true));
 			event.setLine(1, this.colorfy("Click here to"));
 			event.setLine(2, this.colorfy("open up the"));
-			event.setLine(3, this.colorfy("checkpoint menu"));
+			event.setLine(3, this.colorfy("menu"));
 		} else {
 			MapConfig map = NiftyParkour.getMaps().getMap(event.getLine(1));
 			event.setLine(0, this.colorfy(("warp2".equals(event.getKey()) ? "Warp" : "Checkpoints"), true));
@@ -129,7 +130,11 @@ public class SignListener extends BukkitHelper implements net.netcoding.niftybuk
 				UserParkourData userData = UserParkourData.getCache(event.getProfile());
 				Integer checkpoint = Integer.parseInt(event.getLine(2));
 				boolean hasCheckpoint = userData.getPlayerConfig().hasCheckpoint(map.getName(), checkpoint);
-				event.setLine(3, this.colorfy(StringUtil.format("{0}ocked", (hasCheckpoint ? "Unl" : "L")), false, !hasCheckpoint));
+
+				if (userData.isAdminMode())
+					event.setLine(3, this.colorfy("Admin Mode", true));
+				else
+					event.setLine(3, this.colorfy(StringUtil.format("{0}ocked", (hasCheckpoint ? "Unl" : "L")), false, !hasCheckpoint));
 			}
 		}
 	}
@@ -143,7 +148,7 @@ public class SignListener extends BukkitHelper implements net.netcoding.niftybuk
 	}
 
 	private String colorfy(String value, boolean bold, boolean red) {
-		return StringUtil.format("{0}{1}{2}", (bold ? "" : ""), (red ? ChatColor.RED : ChatColor.GREEN), value);
+		return StringUtil.format("{0}{1}{2}", (bold ? ChatColor.BOLD : ""), (red ? ChatColor.RED : ChatColor.GREEN), value);
 	}
 
 }
