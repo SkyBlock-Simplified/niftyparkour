@@ -11,6 +11,8 @@ import net.netcoding.niftyparkour.cache.UserParkourData;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class Map extends BukkitCommand {
@@ -32,12 +34,18 @@ public class Map extends BukkitCommand {
 
 		if ("list".equals(action)) {
 			Set<String> mapNames = NiftyParkour.getMaps().getAllMaps().keySet();
+			List<String> mapList = new ArrayList<>();
 			String nameList = StringUtil.format("{{0}}", "No maps available!");
 
-			if (mapNames.size() > 0)
-				nameList = StringUtil.implode(StringUtil.format("{0}, {1}", ChatColor.GRAY, ChatColor.RED), mapNames);
+			if (mapNames.size() > 0) {
+				for (String mapName : mapNames) {
+					boolean unlocked = !NiftyParkour.getMaps().getMap(mapName).isLocked();
+					mapList.add(StringUtil.format("{0}{1}", (unlocked ? ChatColor.GREEN : ChatColor.RED), mapName));
+				}
+			} else
+				mapList.add(StringUtil.format("{{0}}", "No maps available!"));
 
-			this.getLog().message(sender, "Maps: {{0}}", nameList);
+			this.getLog().message(sender, "Maps: {0}", StringUtil.implode(ChatColor.GRAY + ", ", mapList));
 		} else {
 			if ("lock".equals(alias)) {
 				if (!this.hasPermissions(sender, "map", "lock")) {

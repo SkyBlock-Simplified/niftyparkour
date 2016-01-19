@@ -62,12 +62,16 @@ public class Checkpoint extends BukkitCommand {
 			UserParkourData userData = UserParkourData.getCache(profile);
 			List<String> checkpointList = new ArrayList<>();
 
-			for (int i = 0; i < map.getCheckpoints().size(); i++) {
-				boolean has = userData.getPlayerConfig().hasCheckpoint(map.getName(), i);
-				checkpointList.add(StringUtil.format("{0}{1}", (has ? ChatColor.GREEN : ChatColor.RED), i));
-			}
+			if (map.getCheckpoints().size() > 0) {
+				for (int i = 0; i < map.getCheckpoints().size(); i++) {
+					boolean has = userData.getPlayerConfig().hasCheckpoint(map.getName(), i);
+					checkpointList.add(StringUtil.format("{0}{1}", (has ? ChatColor.GREEN : ChatColor.RED), i));
+				}
+			} else
+				checkpointList.add(StringUtil.format("{{0}}", "No checkpoints available!"));
 
-			this.getLog().message(sender, "Checkpoints for {{0}}: {1}", map.getName(), StringUtil.implode(ChatColor.GRAY + ",", checkpointList));
+			String forWhom = (profile.getName().equals(sender.getName()) ? "" : StringUtil.format(" for {{0}}", map.getName()));
+			this.getLog().message(sender, "Checkpoints{0}: {1}", forWhom, StringUtil.implode(ChatColor.GRAY + ", ", checkpointList));
 		} else {
 			if (!this.hasPermissions(sender, "checkpoint", "manage")) {
 				this.getLog().error(sender, "You do not have permission to manage checkpoints!");
