@@ -18,7 +18,12 @@ public class Map extends BukkitCommand {
 	public Map(JavaPlugin plugin) {
 		super(plugin, "map");
 		this.setPlayerOnly();
-		this.editUsage(1, "list", "");
+		this.editUsage(1, "list", "<map>");
+	}
+
+	public static String parseMapName(String[] args, int index) {
+		String mapName = StringUtil.implode(args, index).replace("_", " ");
+		return (mapName.length() > 15 ? mapName.substring(0, 15) : mapName);
 	}
 
 	@Override
@@ -34,9 +39,16 @@ public class Map extends BukkitCommand {
 
 			this.getLog().message(sender, "Maps: {{0}}", nameList);
 		} else {
-			if (!this.hasPermissions(sender, "map", "manage")) {
-				this.getLog().error(sender, "You do not have permission to manage maps!");
-				return;
+			if ("lock".equals(alias)) {
+				if (!this.hasPermissions(sender, "map", "lock")) {
+					this.getLog().error(sender, "You do not have permission to lock maps!");
+					return;
+				}
+			} else {
+				if (!this.hasPermissions(sender, "map", "manage")) {
+					this.getLog().error(sender, "You do not have permission to manage maps!");
+					return;
+				}
 			}
 
 			if (args.length < 2) {
@@ -46,7 +58,7 @@ public class Map extends BukkitCommand {
 
 			BukkitMojangProfile profile = NiftyBukkit.getMojangRepository().searchByUsername(sender.getName());
 			UserParkourData userData = UserParkourData.getCache(profile);
-			final String mapName = StringUtil.implode(args, 1).replace("_", " ").substring(0, 15);
+			String mapName = parseMapName(args, 1);
 			Maps maps = NiftyParkour.getMaps();
 
 			if (!userData.isAdminMode()) {
@@ -60,19 +72,9 @@ public class Map extends BukkitCommand {
 			}
 
 			if (action.matches("^((un)?lock)$")) {
-				if (!this.hasPermissions(sender, "map", "manage", "lock")) {
-					this.getLog().error(sender, "You do not have permission to {0} maps!", action);
-					return;
-				}
-
 				maps.getMap(mapName).setLocked("lock".equals(action));
 				this.getLog().message(sender, "The map {{0}} has been {{1}ed}!", mapName, action);
 				// TODO: Update open inventories
-				return;
-			}
-
-			if (!this.hasPermissions(sender, "map", "manage", "editor")) {
-				this.getLog().error(sender, "You do not have permission to edit maps!");
 				return;
 			}
 
@@ -87,8 +89,9 @@ public class Map extends BukkitCommand {
 			} else {
 				if ("remove".equals(action)) {
 					// TODO: Request confirmation
-					NiftyParkour.getMaps().removeMap(mapName);
-					// TODO: Send message confirmation
+					//NiftyParkour.getMaps().removeMap(mapName);
+					//this.getLog().message(sender, "The map {{0}} has been removed!");
+					this.getLog().message(sender, "This feature is currently disabled! Please delete manually!");
 				} else if ("setspawn".equals(action)) {
 					NiftyParkour.getMaps().getMap(mapName).setSpawnPoint(profile.getOfflinePlayer().getPlayer().getLocation());
 					this.getLog().message(sender, "The spawn point for {{0}} has been set!", mapName);
