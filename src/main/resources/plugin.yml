@@ -17,7 +17,7 @@ commands:
     aliases: [checkpoints, chk, ch, cp]
   map:
     description: Manages the maps
-    usage: /<command> <add|list|lock|remove|setspawn|unlock> [map]
+    usage: /<command> list|<add|lock|remove|setspawn|unlock> <map>
     aliases: [maps]
   spawn:
     description: Teleports a player to spawn, or set spawnpoint
@@ -33,16 +33,21 @@ permissions:
         children:
           niftyparkour.adminmode.others:
             description: Allows others to administer features
+      niftyparkour.checkpoint.*:
+        description: Allows you to access all checkpoint features
+        children:
+          niftyparkour.checkpoint:
+            description: Allows you to list checkpoints
+          niftyparkour.checkpoint.other:
+            description: Allows you to list other players checkpoints
+          niftyparkour.checkpoint.manage:
+            description: Allows you to manage checkpoints
       niftyparkour.map.*:
         description: Allows you to access all map features
         children:
           niftyparkour.map:
             description: Allows you to list map names
-          niftyparkour.map.manage.*:
-            children:
-              niftyparkour.map.manage:
-                description: Allows you to manage maps
-              niftyparkour.map.manage.lock:
-                description: Allows you prevent and allow access to maps
-              niftyparkour.map.manage.editor:
-                description: Allows you administer maps
+          niftyparkour.map.lock:
+            description: Allows you prevent and allow access to maps
+          niftyparkour.map.manage:
+            description: Allows you administer maps
