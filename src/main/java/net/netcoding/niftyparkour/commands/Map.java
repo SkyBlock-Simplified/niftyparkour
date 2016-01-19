@@ -27,7 +27,11 @@ public class Map extends BukkitCommand {
 
 		if ("list".equals(action)) {
 			Set<String> mapNames = NiftyParkour.getMaps().getAllMaps().keySet();
-			String nameList = StringUtil.implode(StringUtil.format("{0}, {1}", ChatColor.GRAY, ChatColor.RED), mapNames);
+			String nameList = StringUtil.format("{{0}}", "No maps available!");
+
+			if (mapNames.size() > 0)
+				nameList = StringUtil.implode(StringUtil.format("{0}, {1}", ChatColor.GRAY, ChatColor.RED), mapNames);
+
 			this.getLog().message(sender, "Maps: {{0}}", nameList);
 		} else {
 			if (!this.hasPermissions(sender, "map", "manage")) {
