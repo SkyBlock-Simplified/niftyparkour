@@ -94,11 +94,6 @@ public class MapConfig extends BukkitConfig {
 		return this.updating;
 	}
 
-	@Override
-	public void load() {
-		super.load();
-	}
-
 	public void moveCheckpoint(final int checkpoint, final int newCheckpoint) {
 		if (this.isUpdating()) return;
 		if (checkpoint == newCheckpoint) return;
@@ -141,7 +136,6 @@ public class MapConfig extends BukkitConfig {
 
 					playerConfig.save();
 				}
-
 
 				// Update Online Cache
 				for (UserParkourData userData : UserParkourData.getCache())
@@ -186,7 +180,7 @@ public class MapConfig extends BukkitConfig {
 		for (Block block : blocks) {
 			Sign sign = (Sign)block.getState();
 
-			if ("[CHECKPOINT]".equals(sign.getLine(0))) {
+			if ("[checkpoint2]".equalsIgnoreCase(sign.getLine(0))) {
 				Integer current = Integer.parseInt(sign.getLine(2));
 				sign.setLine(2, ("" + current + add));
 			}

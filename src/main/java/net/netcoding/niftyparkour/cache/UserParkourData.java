@@ -14,15 +14,20 @@ import java.util.Collection;
 public class UserParkourData extends BukkitMojangCache<BukkitMojangProfile> {
 
 	private static final transient ConcurrentSet<UserParkourData> CACHE = new ConcurrentSet<>();
-	private boolean adminMode;
+	private boolean adminMode = false;
 	private final PlayerConfig playerConfig;
 	private String lastMap = "";
 	private Integer lastCheckpoint = -1;
 	private Integer secondsOnFire = 0;
 
 	public UserParkourData(JavaPlugin plugin, BukkitMojangProfile profile) {
+		this(plugin, profile, true);
+	}
+
+	private UserParkourData(JavaPlugin plugin, BukkitMojangProfile profile, boolean addToCache) {
 		super(plugin, profile);
 		this.playerConfig = new PlayerConfig(plugin, profile);
+		if (addToCache) CACHE.add(this);
 	}
 
 	public static ConcurrentSet<UserParkourData> getCache() {
@@ -40,19 +45,11 @@ public class UserParkourData extends BukkitMojangCache<BukkitMojangProfile> {
 				return data;
 		}
 
-		return new UserParkourData(NiftyParkour.getPlugin(NiftyParkour.class), profile);
+		return new UserParkourData(NiftyParkour.getPlugin(NiftyParkour.class), profile, false);
 	}
-
-	/*public Integer getLastCheckpoint() {
-		return this.lastCheckpoint;
-	}
-
-	public String getLastMap() {
-		return this.lastMap;
-	}*/
 
 	public boolean isAdminMode() {
-		return adminMode;
+		return this.adminMode;
 	}
 
 	public PlayerConfig getPlayerConfig() {

@@ -13,7 +13,7 @@ commands:
     aliases: [admin, am]
   checkpoint:
     description: Manages the checkpoints
-    usage: /<command> <add|list|move|remove> <map>
+    usage: /<command> <add|list|move|remove> [data] <map>
     aliases: [checkpoints, chk, ch, cp]
   map:
     description: Manages the maps
