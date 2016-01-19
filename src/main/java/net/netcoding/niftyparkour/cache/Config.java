@@ -1,5 +1,6 @@
 package net.netcoding.niftyparkour.cache;
 
+import net.netcoding.niftybukkit.util.LocationUtil;
 import net.netcoding.niftybukkit.yaml.BukkitConfig;
 import net.netcoding.niftycore.yaml.annotations.Path;
 import org.bukkit.Bukkit;
@@ -28,8 +29,11 @@ public class Config extends BukkitConfig {
 		return this.spawnPoint;
 	}
 
-	public void setSpawnPoint(Location value) {
-		this.spawnPoint = value;
+	public void setSpawnPoint(Location location) {
+		location = LocationUtil.level(location); // Level
+		location = LocationUtil.straighten(location); // Straight
+		location = LocationUtil.center(location); // Center
+		this.spawnPoint = location;
 		super.save();
 	}
 
