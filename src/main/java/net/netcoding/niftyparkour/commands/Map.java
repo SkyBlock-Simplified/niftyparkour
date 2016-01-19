@@ -80,12 +80,12 @@ public class Map extends BukkitCommand {
 
 			if (action.matches("^(add|create)$")) {
 				if (maps.checkExists(mapName)) {
-					this.getLog().error(sender, "Unable to create {{0}}, it already exists!");
+					this.getLog().error(sender, "Unable to create {{0}}, it already exists!", mapName);
 					return;
 				}
 
 				maps.addMap(mapName);
-				this.getLog().message(sender, "The map {{0}} has been created!");
+				this.getLog().message(sender, "The map {{0}} has been created!", mapName);
 			} else {
 				if ("remove".equals(action)) {
 					// TODO: Request confirmation
