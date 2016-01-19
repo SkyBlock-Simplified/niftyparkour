@@ -14,7 +14,7 @@ commands:
   checkpoint:
     description: Manages the checkpoints
     usage: /<command> <add|list|move|remove> <map>
-    aliases: [checkpoints, chk, ch]
+    aliases: [checkpoints, chk, ch, cp]
   map:
     description: Manages the maps
     usage: /<command> <add|list|lock|remove|setspawn|unlock> [map]
