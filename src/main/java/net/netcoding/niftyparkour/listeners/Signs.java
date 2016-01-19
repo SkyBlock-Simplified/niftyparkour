@@ -90,12 +90,6 @@ public class Signs extends BukkitHelper implements net.netcoding.niftybukkit.sig
 		UserParkourData userData = UserParkourData.getCache(event.getProfile());
 		Player player = userData.getOfflinePlayer().getPlayer();
 
-		// Debug Testing
-		if (userData.isAdminMode()) {
-			for (String line : event.getLines())
-				player.sendMessage(line);
-		}
-
 		try {
 			if ("spawn2".equals(event.getKey())) {
 				userData.teleportToSpawn();
@@ -106,7 +100,7 @@ public class Signs extends BukkitHelper implements net.netcoding.niftybukkit.sig
 
 				if ("warp2".equals(event.getKey()))
 					userData.teleportTo(map.getName());
-				else if ("checkpoints2".equals(event.getKey())) {
+				else if ("checkpoint2".equals(event.getKey())) {
 					userData.getPlayerConfig().addCheckpoint(map.getName(), Integer.parseInt(event.getLine(2)));
 				}
 			}
@@ -129,10 +123,10 @@ public class Signs extends BukkitHelper implements net.netcoding.niftybukkit.sig
 			event.setLine(3, this.colorfy("menu"));
 		} else {
 			MapConfig map = NiftyParkour.getMaps().getMap(event.getLine(1));
-			event.setLine(0, this.colorfy(("warp2".equals(event.getKey()) ? "Warp" : "Checkpoints"), true));
+			event.setLine(0, this.colorfy(("warp2".equals(event.getKey()) ? "Warp" : "Checkpoint"), true));
 			event.setLine(1, map.getName());
 
-			if ("checkpoints2".equals(event.getKey())) {
+			if ("checkpoint2".equals(event.getKey())) {
 				UserParkourData userData = UserParkourData.getCache(event.getProfile());
 				Integer checkpoint = Integer.parseInt(event.getLine(2));
 				boolean hasCheckpoint = userData.getPlayerConfig().hasCheckpoint(map.getName(), checkpoint);
@@ -154,7 +148,7 @@ public class Signs extends BukkitHelper implements net.netcoding.niftybukkit.sig
 	}
 
 	private String colorfy(String value, boolean bold, boolean red) {
-		return StringUtil.format("{0}{1}{2}", (bold ? ChatColor.BOLD : ""), (red ? ChatColor.RED : ChatColor.GREEN), value);
+		return StringUtil.format("{0}{1}{2}", (red ? ChatColor.RED : ChatColor.GREEN), (bold ? ChatColor.BOLD : ""), value);
 	}
 
 }
