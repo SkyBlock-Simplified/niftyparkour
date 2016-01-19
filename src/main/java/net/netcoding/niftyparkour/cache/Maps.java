@@ -23,8 +23,19 @@ public class Maps extends BukkitHelper {
 		String[] mapNames = mapsDirectory.list();
 
 		for (String mapName : mapNames) {
+			if (mapName.endsWith(".disabled"))
+				continue;
+
 			MapConfig config = new MapConfig(this.getPlugin(), mapName);
-			config.init();
+
+			try {
+				config.init();
+			} catch (Exception ex) {
+				this.getLog().console("Failed to load map file {0}, disabling map!", ex, mapName);
+				File mapFile = new File(mapName);
+				mapFile.renameTo(new File(mapName + ".disabled"));
+				continue;
+			}
 
 			try {
 				config.startWatcher();
