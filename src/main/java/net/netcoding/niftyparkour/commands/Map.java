@@ -94,17 +94,16 @@ public class Map extends BukkitCommand {
 
 				maps.addMap(mapName);
 				this.getLog().message(sender, "The map {{0}} has been created!", mapName);
-			} else {
-				if ("remove".equals(action)) {
-					// TODO: Request confirmation
-					//NiftyParkour.getMaps().removeMap(mapName);
-					//this.getLog().message(sender, "The map {{0}} has been removed!");
-					this.getLog().message(sender, "This feature is currently disabled! Please delete manually!");
-				} else if ("setspawn".equals(action)) {
-					NiftyParkour.getMaps().getMap(mapName).setSpawnPoint(profile.getOfflinePlayer().getPlayer().getLocation());
-					this.getLog().message(sender, "The spawn point for {{0}} has been set!", mapName);
-				}
-			}
+			} else if (action.matches("^(remov|delete)$")) {
+				// TODO: Request confirmation
+				//NiftyParkour.getMaps().removeMap(mapName);
+				//this.getLog().message(sender, "The map {{0}} has been removed!");
+				this.getLog().message(sender, "This feature is currently disabled! Please delete manually!");
+			} else if ("setspawn".equals(action)) {
+				NiftyParkour.getMaps().getMap(mapName).setSpawnPoint(profile.getOfflinePlayer().getPlayer().getLocation());
+				this.getLog().message(sender, "The spawn point for {{0}} has been set!", mapName);
+			} else
+				this.showUsage(sender);
 		}
 	}
 
