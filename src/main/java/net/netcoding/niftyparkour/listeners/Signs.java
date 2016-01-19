@@ -68,6 +68,12 @@ public class Signs extends BukkitHelper implements net.netcoding.niftybukkit.sig
 			try {
 				Integer checkpoint = Integer.parseInt(number);
 
+				if (checkpoint < 1) {
+					this.getLog().error(player, "Checkpoints start at 1!");
+					event.setCancelled(true);
+					return;
+				}
+
 				if (!map.hasCheckpoint(checkpoint)) {
 					this.getLog().error(player, "There is no checkpoint {{0}}!", checkpoint);
 					event.setCancelled(true);
