@@ -43,7 +43,7 @@ public class Maps extends BukkitHelper {
 				this.getLog().console("Unable to monitor {0} map config! Changes will require a restart!", ex, mapName);
 			}
 
-			this.maps.put(mapName.replace(".yml", ""), config);
+			this.maps.put(config.getName(), config);
 		}
 	}
 
