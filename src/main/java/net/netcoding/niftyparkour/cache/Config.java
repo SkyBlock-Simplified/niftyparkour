@@ -9,7 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class Config extends BukkitConfig {
 
-	private static final Location DEFAULT_SPAWN = Bukkit.getWorlds().get(0).getSpawnLocation();
+	public static final Location DEFAULT_SPAWN = Bukkit.getWorlds().get(0).getSpawnLocation();
 
 	@Path("spawn-point")
 	private Location spawnPoint = DEFAULT_SPAWN;
