@@ -96,6 +96,7 @@ public class Checkpoint extends BukkitCommand {
 
 			if ("add".equals(action)) {
 				map.addCheckpoint(player.getLocation());
+				this.getLog().message(sender, "Checkpoint {{0}} added for {{1}}!", map.getCheckpoints().size(), mapName);
 			} else if ("move".equals(action)) {
 				if (args.length < 4) {
 					this.showUsage(sender);
@@ -106,6 +107,8 @@ public class Checkpoint extends BukkitCommand {
 					int checkpoint = Integer.parseInt(args[2]);
 					int newCheckpoint = Integer.parseInt(args[3]);
 					map.moveCheckpoint(checkpoint, newCheckpoint);
+					this.getLog().message(sender, "Checkpoint {{0}} moving to {{1}} for {{2}}...", checkpoint, newCheckpoint, mapName);
+					// TODO: Callback for completion
 				} catch (NumberFormatException nfex) {
 					this.getLog().error(sender, "The values {{0}} and {{1}} must be valid integers!", args[2], args[3]);
 				}
@@ -118,10 +121,16 @@ public class Checkpoint extends BukkitCommand {
 				try {
 					int checkpoint = Integer.parseInt(args[2]);
 					map.removeCheckpoint(checkpoint);
+					this.getLog().message(sender, "Checkpoint {{0}} removed for {{1}}!", checkpoint, mapName);
 				} catch (NumberFormatException nfex) {
 					this.getLog().error(sender, "The value {{0}} must be a valid integer!", args[2]);
 				}
+			} else {
+				this.showUsage(sender);
+				return;
 			}
+
+			map.save();
 		}
 	}
 
