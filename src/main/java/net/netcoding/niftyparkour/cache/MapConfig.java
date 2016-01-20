@@ -83,7 +83,7 @@ public class MapConfig extends BukkitConfig {
 	}
 
 	public boolean hasCheckpoint(int checkpoint) {
-		return checkpoint < this.checkpoints.size();
+		return checkpoint <= this.checkpoints.size();
 	}
 
 	public boolean isLocked() {
