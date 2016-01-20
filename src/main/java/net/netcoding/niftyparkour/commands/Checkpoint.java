@@ -90,7 +90,7 @@ public class Checkpoint extends BukkitCommand {
 			MapConfig map = NiftyParkour.getMaps().getMap(mapName);
 
 			if (!userData.isAdminMode()) {
-				this.getLog().error(sender, "You must be in admin mode to manage maps!");
+				this.getLog().error(sender, "You must be in admin mode to manage checkpoints!");
 				return;
 			}
 
