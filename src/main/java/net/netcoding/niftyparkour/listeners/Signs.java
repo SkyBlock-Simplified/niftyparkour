@@ -101,11 +101,17 @@ public class Signs extends BukkitHelper implements net.netcoding.niftybukkit.sig
 				if ("warp2".equals(event.getKey()))
 					userData.teleportTo(map.getName());
 				else if ("checkpoint2".equals(event.getKey())) {
-					userData.getPlayerConfig().addCheckpoint(map.getName(), Integer.parseInt(event.getLine(2)));
+					int checkpoint = Integer.parseInt(event.getLine(2));
+					boolean has = userData.getPlayerConfig().hasCheckpoint(map.getName(), checkpoint);
+
+					if (!has)
+						userData.getPlayerConfig().addCheckpoint(map.getName(), checkpoint);
+
+					this.getLog().message(player, "Checkpoint {{0}}{1} unlocked for {{2}}!", checkpoint, (has ? " already" : ""), map.getName());
 				}
 			}
 		} catch (Exception ex) {
-			this.getLog().error(player, "Unable to interact with sign! Please notify staff!");
+			this.getLog().error(player, "Unable to interact with sign! Please notify staff!", ex);
 		}
 	}
 
