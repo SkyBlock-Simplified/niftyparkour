@@ -26,7 +26,7 @@ public class UserParkourData extends BukkitMojangCache<BukkitMojangProfile> {
 
 	private UserParkourData(JavaPlugin plugin, BukkitMojangProfile profile, boolean addToCache) {
 		super(plugin, profile);
-		this.playerConfig = new PlayerConfig(plugin, profile);
+		(this.playerConfig = new PlayerConfig(plugin, profile)).init();
 		if (addToCache) CACHE.add(this);
 	}
 
