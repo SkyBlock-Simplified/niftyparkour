@@ -47,7 +47,7 @@ public class MapConfig extends BukkitConfig {
 	}
 
 	public Location getCheckpoint(int checkpoint) {
-		return this.checkpoints.get(checkpoint);
+		return this.checkpoints.get(checkpoint - 1);
 	}
 
 	public List<Location> getCheckpoints() {
@@ -83,7 +83,7 @@ public class MapConfig extends BukkitConfig {
 	}
 
 	public boolean hasCheckpoint(int checkpoint) {
-		return checkpoint <= this.checkpoints.size();
+		return checkpoint > 0 && checkpoint <= this.checkpoints.size();
 	}
 
 	public boolean isLocked() {
