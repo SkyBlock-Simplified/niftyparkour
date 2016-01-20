@@ -104,13 +104,13 @@ public class Checkpoint extends BukkitCommand {
 				}
 
 				try {
-					int checkpoint = Integer.parseInt(args[2]);
-					int newCheckpoint = Integer.parseInt(args[3]);
+					int checkpoint = Integer.parseInt(args[1]);
+					int newCheckpoint = Integer.parseInt(args[2]);
 					map.moveCheckpoint(checkpoint, newCheckpoint);
 					this.getLog().message(sender, "Checkpoint {{0}} moving to {{1}} for {{2}}...", checkpoint, newCheckpoint, mapName);
 					// TODO: Callback for completion
 				} catch (NumberFormatException nfex) {
-					this.getLog().error(sender, "The values {{0}} and {{1}} must be valid integers!", args[2], args[3]);
+					this.getLog().error(sender, "The values {{0}} and {{1}} must be valid integers!", args[1], args[2]);
 				}
 			} else if ("remove".equals(action)) {
 				if (args.length < 3) {
@@ -119,11 +119,11 @@ public class Checkpoint extends BukkitCommand {
 				}
 
 				try {
-					int checkpoint = Integer.parseInt(args[2]);
+					int checkpoint = Integer.parseInt(args[1]);
 					map.removeCheckpoint(checkpoint);
 					this.getLog().message(sender, "Checkpoint {{0}} removed for {{1}}!", checkpoint, mapName);
 				} catch (NumberFormatException nfex) {
-					this.getLog().error(sender, "The value {{0}} must be a valid integer!", args[2]);
+					this.getLog().error(sender, "The value {{0}} must be a valid integer!", args[1]);
 				}
 			} else {
 				this.showUsage(sender);
