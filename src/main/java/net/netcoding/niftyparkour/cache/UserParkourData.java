@@ -86,11 +86,18 @@ public class UserParkourData extends BukkitMojangCache<BukkitMojangProfile> {
 		this.lastMap = mapName;
 		this.lastCheckpoint = checkpoint;
 		MapConfig map = NiftyParkour.getMaps().getMap(mapName);
-		this.teleportTo(map.getCheckpoint(checkpoint));
+
+		if (checkpoint < 1)
+			this.teleportTo(map.getSpawnPoint());
+		else
+			this.teleportTo(map.getCheckpoint(checkpoint));
 	}
 
 	public void teleportToLast() {
-		this.teleportTo(this.lastMap, this.lastCheckpoint);
+		if (this.lastCheckpoint >= 0)
+			this.teleportTo(this.lastMap, this.lastCheckpoint);
+		else
+			this.teleportToSpawn();
 	}
 
 	private void teleportTo(Location location) {
