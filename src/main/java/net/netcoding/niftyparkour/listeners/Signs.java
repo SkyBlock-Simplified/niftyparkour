@@ -9,6 +9,7 @@ import net.netcoding.niftycore.minecraft.ChatColor;
 import net.netcoding.niftycore.util.StringUtil;
 import net.netcoding.niftyparkour.NiftyParkour;
 import net.netcoding.niftyparkour.cache.MapConfig;
+import net.netcoding.niftyparkour.cache.PlayerConfig;
 import net.netcoding.niftyparkour.cache.UserParkourData;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -102,10 +103,13 @@ public class Signs extends BukkitHelper implements net.netcoding.niftybukkit.sig
 					userData.teleportTo(map.getName());
 				else if ("checkpoint2".equals(event.getKey())) {
 					int checkpoint = Integer.parseInt(event.getLine(2));
-					boolean has = userData.getPlayerConfig().hasCheckpoint(map.getName(), checkpoint);
+					PlayerConfig config = userData.getPlayerConfig();
+					boolean has = config.hasCheckpoint(map.getName(), checkpoint);
 
-					if (!has)
-						userData.getPlayerConfig().addCheckpoint(map.getName(), checkpoint);
+					if (!has) {
+						config.addCheckpoint(map.getName(), checkpoint);
+						config.save();
+					}
 
 					this.getLog().message(player, "Checkpoint {{0}}{1} unlocked for {{2}}!", checkpoint, (has ? " already" : ""), map.getName());
 				}
