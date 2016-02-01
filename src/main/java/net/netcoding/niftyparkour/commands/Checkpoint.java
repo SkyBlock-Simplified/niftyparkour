@@ -53,7 +53,7 @@ public class Checkpoint extends BukkitCommand {
 				}
 			}
 
-			if (!profile.getName().equals(sender.getName())) {
+			if (!(profile.getName().equals(sender.getName()) || this.hasPermissions(sender, "checkpoint", "other"))) {
 				this.getLog().error(sender, "You do not have permission to view other players checkpoints!");
 				return;
 			}
