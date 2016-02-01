@@ -51,3 +51,10 @@ permissions:
             description: Allows you prevent and allow access to maps
           niftyparkour.map.manage:
             description: Allows you administer maps
+      niftyparkour.menu:
+        description: Allows you to view the map/checkpoint menu
+      niftyparkour.spawn:
+        description: Allows you to warp to spawn
+        default: true
+      niftyparkour.warp:
+        description: Allows you to warp to maps
