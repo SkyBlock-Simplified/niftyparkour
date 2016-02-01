@@ -9,6 +9,7 @@ import net.netcoding.niftyparkour.NiftyParkour;
 import net.netcoding.niftyparkour.cache.Maps;
 import net.netcoding.niftyparkour.cache.UserParkourData;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -37,7 +38,6 @@ public class Map extends BukkitCommand {
 			UserParkourData userData = UserParkourData.getCache(profile);
 			Set<String> mapNames = NiftyParkour.getMaps().getAllMaps().keySet();
 			List<String> mapList = new ArrayList<>();
-			String nameList = StringUtil.format("{{0}}", "No maps available!");
 
 			if (mapNames.size() > 0) {
 				for (String mapName : mapNames) {
@@ -81,9 +81,21 @@ public class Map extends BukkitCommand {
 				return;
 			}
 
-			if (action.matches("^((un)?lock)$")) {
+			if (action.matches("^(un)?lock$")) {
 				maps.getMap(mapName).setLocked("lock".equals(action));
 				this.getLog().message(sender, "The map {{0}} has been {{1}ed}!", mapName, action);
+
+				if (maps.getMap(mapName).isLocked()) {
+					for (UserParkourData playerData : UserParkourData.getCache()) {
+						if (mapName.equalsIgnoreCase(playerData.getLastMap())) {
+							Player player = playerData.getOfflinePlayer().getPlayer();
+							player.closeInventory();
+							this.getLog().message(player, "{{0}} has just been locked!", mapName);
+							playerData.teleportToSpawn();
+						}
+					}
+				}
+
 				// TODO: Update open inventories
 			} else if (action.matches("^(add|create)$")) {
 				if (maps.checkExists(mapName)) {
