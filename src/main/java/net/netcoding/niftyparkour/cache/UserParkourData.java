@@ -48,6 +48,10 @@ public class UserParkourData extends BukkitMojangCache<BukkitMojangProfile> {
 		return new UserParkourData(NiftyParkour.getPlugin(NiftyParkour.class), profile, false);
 	}
 
+	public String getLastMap() {
+		return this.lastMap;
+	}
+
 	public boolean isAdminMode() {
 		return this.adminMode;
 	}
@@ -95,7 +99,7 @@ public class UserParkourData extends BukkitMojangCache<BukkitMojangProfile> {
 
 	public void teleportToLast() {
 		if (this.lastCheckpoint >= 0)
-			this.teleportTo(this.lastMap, this.lastCheckpoint);
+			this.teleportTo(this.getLastMap(), this.lastCheckpoint);
 		else
 			this.teleportToSpawn();
 	}
