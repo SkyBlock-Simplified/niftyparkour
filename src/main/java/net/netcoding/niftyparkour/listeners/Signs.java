@@ -54,15 +54,23 @@ public class Signs extends BukkitHelper implements net.netcoding.niftybukkit.sig
 			return;
 		}
 
-		if ("checkpoint2".equals(event.getKey())) {
+		if (event.getKey().matches("^(warp2|checkpoint2)$")) {
 			String mapName = event.getLine(1);
+
+			if (StringUtil.isEmpty(mapName)) {
+				this.getLog().error(player, "You must provide a map name!");
+				event.setCancelled(true);
+				return;
+			}
 
 			if (!NiftyParkour.getMaps().hasMap(mapName)) {
 				this.getLog().error(player, "There is no map {{0}}!", mapName);
 				event.setCancelled(true);
 				return;
 			}
+		}
 
+		if ("checkpoint2".equals(event.getKey())) {
 			MapConfig map = NiftyParkour.getMaps().getMap(event.getLine(1));
 			String number = event.getLine(2);
 
@@ -90,6 +98,11 @@ public class Signs extends BukkitHelper implements net.netcoding.niftybukkit.sig
 	public void onSignInteract(SignInteractEvent event) {
 		UserParkourData userData = UserParkourData.getCache(event.getProfile());
 		Player player = userData.getOfflinePlayer().getPlayer();
+
+		if (!this.hasPermissions(player, event.getKey())) {
+			this.getLog().error(player, "You cannot interact with {{0}} signs!", event.getKey());
+			return;
+		}
 
 		try {
 			if ("spawn2".equals(event.getKey())) {
