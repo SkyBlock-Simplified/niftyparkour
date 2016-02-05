@@ -23,13 +23,13 @@ public class Damage extends BukkitListener {
 		if (event.getEntity() instanceof Player) {
 			Player player = (Player)event.getEntity();
 
-			if (DamageCause.VOID.equals(event.getCause()))
+			if (DamageCause.VOID == event.getCause())
 				event.setCancelled(true);
 			else {
 				BukkitMojangProfile profile = NiftyBukkit.getMojangRepository().searchByPlayer(player);
 				UserParkourData userData = UserParkourData.getCache(profile);
 
-				if (DamageCause.FIRE_TICK.equals(event.getCause())) {
+				if (DamageCause.FIRE_TICK == event.getCause()) {
 					userData.incSecondsOnFire();
 
 					if (userData.getSecondsOnFire() >= NiftyParkour.getPluginConfig().getFireBurnDuration()) {
