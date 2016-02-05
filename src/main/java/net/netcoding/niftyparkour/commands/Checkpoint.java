@@ -72,7 +72,7 @@ public class Checkpoint extends BukkitCommand {
 
 			String forWhom = (profile.getName().equals(sender.getName()) ? "" : StringUtil.format(" for {{0}}", map.getName()));
 			this.getLog().message(sender, "Checkpoints{0}: {1}", forWhom, StringUtil.implode(ChatColor.GRAY + ", ", checkpointList));
-		} else {
+		} else if (action.matches("^(add|(re)?move)$")) {
 			if (!this.hasPermissions(sender, "checkpoint", "manage")) {
 				this.getLog().error(sender, "You do not have permission to manage checkpoints!");
 				return;
@@ -106,7 +106,23 @@ public class Checkpoint extends BukkitCommand {
 				try {
 					int checkpoint = Integer.parseInt(args[1]);
 					int newCheckpoint = Integer.parseInt(args[2]);
-					map.moveCheckpoint(checkpoint, newCheckpoint);
+
+					if (checkpoint == newCheckpoint) {
+						this.getLog().error(sender, "You cannot move a checkpoint to itself!");
+						return;
+					}
+
+					if (!map.hasCheckpoint(checkpoint)) {
+						this.getLog().error(sender, "{{0}} does not have checkpoint {{1}}!", map.getName(), checkpoint);
+						return;
+					}
+
+					if (!map.hasCheckpoint(newCheckpoint)) {
+						this.getLog().error(sender, "{{0}} does not have checkpoint {{1}}!", map.getName(), newCheckpoint);
+						return;
+					}
+
+					map.moveCheckpoint(checkpoint, newCheckpoint/*, sender*/);
 					this.getLog().message(sender, "Checkpoint {{0}} moving to {{1}} for {{2}}...", checkpoint, newCheckpoint, mapName);
 					// TODO: Callback for completion
 				} catch (NumberFormatException nfex) {
@@ -120,18 +136,22 @@ public class Checkpoint extends BukkitCommand {
 
 				try {
 					int checkpoint = Integer.parseInt(args[1]);
+
+					if (!map.hasCheckpoint(checkpoint)) {
+						this.getLog().error(sender, "{{0}} does not have checkpoint {{1}}!", map.getName(), checkpoint);
+						return;
+					}
+
 					map.removeCheckpoint(checkpoint);
 					this.getLog().message(sender, "Checkpoint {{0}} removed for {{1}}!", checkpoint, mapName);
 				} catch (NumberFormatException nfex) {
 					this.getLog().error(sender, "The value {{0}} must be a valid integer!", args[1]);
 				}
-			} else {
-				this.showUsage(sender);
-				return;
 			}
 
 			map.save();
-		}
+		} else
+			this.showUsage(sender);
 	}
 
 }
