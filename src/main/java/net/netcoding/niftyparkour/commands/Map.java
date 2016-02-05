@@ -48,8 +48,8 @@ public class Map extends BukkitCommand {
 				mapList.add(StringUtil.format("{{0}}", "No maps available!"));
 
 			this.getLog().message(sender, "Maps: {0}", StringUtil.implode(ChatColor.GRAY + ", ", mapList));
-		} else {
-			if ("lock".equals(alias)) {
+		} else if (action.matches("^((un)?lock|add|create|setspawn|(remov|delet)e)$")) {
+			if ("lock".equals(action)) {
 				if (!this.hasPermissions(sender, "map", "lock")) {
 					this.getLog().error(sender, "You do not have permission to lock maps!");
 					return;
@@ -113,13 +113,11 @@ public class Map extends BukkitCommand {
 			} else if ("setspawn".equals(action)) {
 				NiftyParkour.getMaps().getMap(mapName).setSpawnPoint(profile.getOfflinePlayer().getPlayer().getLocation());
 				this.getLog().message(sender, "The spawn point for {{0}} has been set!", mapName);
-			} else {
-				this.showUsage(sender);
-				return;
 			}
 
 			maps.getMap(mapName).save();
-		}
+		} else
+			this.showUsage(sender);
 	}
 
 }
