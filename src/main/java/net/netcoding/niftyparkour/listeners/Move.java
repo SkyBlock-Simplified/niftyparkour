@@ -1,12 +1,6 @@
 package net.netcoding.niftyparkour.listeners;
 
-import net.netcoding.niftybukkit.NiftyBukkit;
 import net.netcoding.niftybukkit.minecraft.BukkitListener;
-import net.netcoding.niftybukkit.mojang.BukkitMojangProfile;
-import net.netcoding.niftyparkour.cache.UserParkourData;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Move extends BukkitListener {
@@ -15,7 +9,7 @@ public class Move extends BukkitListener {
 		super(plugin);
 	}
 
-	@EventHandler
+	/*@EventHandler
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
 
@@ -24,6 +18,6 @@ public class Move extends BukkitListener {
 			UserParkourData userData = UserParkourData.getCache(profile);
 			userData.teleportToLast();
 		}
-	}
+	}*/
 
 }

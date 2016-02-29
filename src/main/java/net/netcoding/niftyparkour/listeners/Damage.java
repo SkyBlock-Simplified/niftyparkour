@@ -22,13 +22,14 @@ public class Damage extends BukkitListener {
 	public void onEntityDamage(EntityDamageEvent event) {
 		if (event.getEntity() instanceof Player) {
 			Player player = (Player)event.getEntity();
+			BukkitMojangProfile profile = NiftyBukkit.getMojangRepository().searchByPlayer(player);
+			UserParkourData userData = UserParkourData.getCache(profile);
 
-			if (DamageCause.VOID == event.getCause())
+			if (DamageCause.VOID == event.getCause()) {
 				event.setCancelled(true);
-			else {
-				BukkitMojangProfile profile = NiftyBukkit.getMojangRepository().searchByPlayer(player);
-				UserParkourData userData = UserParkourData.getCache(profile);
-
+				event.setDamage(0D);
+				userData.teleportToLast();
+			} else {
 				if (DamageCause.FIRE_TICK == event.getCause()) {
 					userData.incSecondsOnFire();
 
