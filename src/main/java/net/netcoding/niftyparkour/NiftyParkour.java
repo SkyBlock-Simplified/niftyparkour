@@ -9,6 +9,7 @@ import net.netcoding.niftyparkour.commands.AdminMode;
 import net.netcoding.niftyparkour.commands.Checkpoint;
 import net.netcoding.niftyparkour.commands.Map;
 import net.netcoding.niftyparkour.commands.Spawn;
+import net.netcoding.niftyparkour.listeners.Blocks;
 import net.netcoding.niftyparkour.listeners.Connections;
 import net.netcoding.niftyparkour.listeners.Damage;
 import net.netcoding.niftyparkour.listeners.Move;
@@ -48,6 +49,7 @@ public class NiftyParkour extends BukkitPlugin {
 		new Spawn(this);
 
 		this.getLog().console("Registering Listeners");
+		new Blocks(this);
 		new Connections(this);
 		new Damage(this);
 		new Move(this);
