@@ -8,6 +8,7 @@ import net.netcoding.niftybukkit.signs.events.SignUpdateEvent;
 import net.netcoding.niftycore.minecraft.ChatColor;
 import net.netcoding.niftycore.util.StringUtil;
 import net.netcoding.niftyparkour.NiftyParkour;
+import net.netcoding.niftyparkour.cache.Keys;
 import net.netcoding.niftyparkour.cache.MapConfig;
 import net.netcoding.niftyparkour.cache.PlayerConfig;
 import net.netcoding.niftyparkour.cache.UserParkourData;
@@ -54,7 +55,7 @@ public class Signs extends BukkitHelper implements net.netcoding.niftybukkit.sig
 			return;
 		}
 
-		if (event.getKey().matches("^(warp2|checkpoint2)$")) {
+		if (event.getKey().matches(StringUtil.format("^({2}|{1})$", Keys.WARP, Keys.CHECKPOINT))) {
 			String mapName = event.getLine(1);
 
 			if (StringUtil.isEmpty(mapName)) {
@@ -70,7 +71,7 @@ public class Signs extends BukkitHelper implements net.netcoding.niftybukkit.sig
 			}
 		}
 
-		if ("checkpoint2".equals(event.getKey())) {
+		if (Keys.isKey(Keys.CHECKPOINT, event.getKey())) {
 			MapConfig map = NiftyParkour.getMaps().getMap(event.getLine(1));
 			String number = event.getLine(2);
 
@@ -105,16 +106,16 @@ public class Signs extends BukkitHelper implements net.netcoding.niftybukkit.sig
 		}
 
 		try {
-			if ("spawn2".equals(event.getKey())) {
+			if (Keys.isKey(Keys.SPAWN, event.getKey())) {
 				userData.teleportToSpawn();
-			} else if ("menu2".equals(event.getKey())) {
+			} else if (Keys.isKey(Keys.MENU, event.getKey())) {
 				// TODO: Open menu
 			} else {
 				MapConfig map = NiftyParkour.getMaps().getMap(event.getLine(1));
 
-				if ("warp2".equals(event.getKey()))
+				if (Keys.isKey(Keys.WARP, event.getKey()))
 					userData.teleportTo(map.getName());
-				else if ("checkpoint2".equals(event.getKey())) {
+				else if (Keys.isKey(Keys.CHECKPOINT, event.getKey())) {
 					int checkpoint = Integer.parseInt(event.getLine(2));
 					PlayerConfig config = userData.getPlayerConfig();
 					boolean has = config.hasCheckpoint(map.getName(), checkpoint);
@@ -134,22 +135,22 @@ public class Signs extends BukkitHelper implements net.netcoding.niftybukkit.sig
 
 	@Override
 	public void onSignUpdate(SignUpdateEvent event) {
-		if ("spawn2".equals(event.getKey())) {
+		if (Keys.isKey(Keys.SPAWN, event.getKey())) {
 			event.setLine(0, this.colorfy("Spawn", true));
 			event.setLine(1, this.colorfy("Click here to"));
 			event.setLine(2, this.colorfy("go back to"));
 			event.setLine(3, this.colorfy("spawn"));
-		} else if ("menu2".equals(event.getKey())) {
+		} else if (Keys.isKey(Keys.MENU, event.getKey())) {
 			event.setLine(0, this.colorfy("Main Menu", true));
 			event.setLine(1, this.colorfy("Click here to"));
 			event.setLine(2, this.colorfy("open up the"));
 			event.setLine(3, this.colorfy("menu"));
 		} else {
 			MapConfig map = NiftyParkour.getMaps().getMap(event.getLine(1));
-			event.setLine(0, this.colorfy(("warp2".equals(event.getKey()) ? "Warp" : "Checkpoint"), true));
+			event.setLine(0, this.colorfy((Keys.isKey(Keys.WARP, event.getKey()) ? "Warp" : "Checkpoint"), true));
 			event.setLine(1, map.getName());
 
-			if ("checkpoint2".equals(event.getKey())) {
+			if (Keys.isKey(Keys.CHECKPOINT, event.getKey())) {
 				UserParkourData userData = UserParkourData.getCache(event.getProfile());
 				Integer checkpoint = Integer.parseInt(event.getLine(2));
 				boolean hasCheckpoint = userData.getPlayerConfig().hasCheckpoint(map.getName(), checkpoint);
