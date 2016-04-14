@@ -13,7 +13,6 @@ import net.netcoding.niftyparkour.commands.Spawn;
 import net.netcoding.niftyparkour.listeners.Blocks;
 import net.netcoding.niftyparkour.listeners.Connections;
 import net.netcoding.niftyparkour.listeners.Damage;
-import net.netcoding.niftyparkour.listeners.Move;
 import net.netcoding.niftyparkour.listeners.Signs;
 import org.bukkit.World;
 
@@ -53,7 +52,6 @@ public class NiftyParkour extends BukkitPlugin {
 		new Blocks(this);
 		new Connections(this);
 		new Damage(this);
-		new Move(this);
 		SIGN_MONITOR = new SignMonitor(this);
 		SIGN_MONITOR.addListener(new Signs(this), Keys.SPAWN.toString(), Keys.WARP.toString(), Keys.MENU.toString(), Keys.CHECKPOINT.toString());
 		SIGN_MONITOR.start();
