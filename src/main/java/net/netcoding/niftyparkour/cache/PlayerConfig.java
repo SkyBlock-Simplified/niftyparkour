@@ -7,7 +7,7 @@ import net.netcoding.niftycore.util.concurrent.ConcurrentList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Collections;
-import java.util.Map;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -37,8 +37,8 @@ public class PlayerConfig extends BukkitConfig {
 		}
 	}
 
-	public Map<String, ConcurrentList<Integer>> getCheckpoints() {
-		return Collections.unmodifiableMap(this.checkpoints);
+	public List<Integer> getCheckpoints(String mapName) {
+		return Collections.unmodifiableList(this.checkpoints.get(mapName));
 	}
 
 	public boolean hasCheckpoint(String mapName, int checkpoint) {
@@ -47,7 +47,7 @@ public class PlayerConfig extends BukkitConfig {
 
 	public void removeCheckpoint(String mapName, int checkpoint) {
 		if (this.checkpoints.containsKey(mapName))
-			this.checkpoints.get(mapName).remove(checkpoint);
+			this.checkpoints.get(mapName).remove((Object)checkpoint);
 	}
 
 	public void removeCheckpoints(String mapName) {
