@@ -26,6 +26,12 @@ public class Maps extends BukkitHelper {
 			if (mapName.endsWith(".disabled"))
 				continue;
 
+			this.addMap(mapName);
+		}
+	}
+
+	public void addMap(String mapName) {
+		if (!this.maps.containsKey(mapName)) {
 			MapConfig config = new MapConfig(this.getPlugin(), mapName);
 
 			try {
@@ -34,7 +40,7 @@ public class Maps extends BukkitHelper {
 				this.getLog().console("Failed to load map file {0}, disabling map!", ex, mapName);
 				File mapFile = new File(mapName);
 				mapFile.renameTo(new File(mapName + ".disabled"));
-				continue;
+				return;
 			}
 
 			try {
@@ -44,15 +50,6 @@ public class Maps extends BukkitHelper {
 			}
 
 			this.maps.put(config.getName(), config);
-		}
-	}
-
-	public void addMap(String mapName) throws Exception {
-		if (!this.maps.containsKey(mapName)) {
-			MapConfig config = new MapConfig(this.getPlugin(), mapName);
-			config.init();
-			config.startWatcher();
-			this.maps.put(mapName, config);
 		}
 	}
 
