@@ -4,6 +4,7 @@ import net.netcoding.niftybukkit.minecraft.BukkitPlugin;
 import net.netcoding.niftybukkit.mojang.BukkitMojangProfile;
 import net.netcoding.niftybukkit.signs.SignMonitor;
 import net.netcoding.niftyparkour.cache.Config;
+import net.netcoding.niftyparkour.cache.Keys;
 import net.netcoding.niftyparkour.cache.Maps;
 import net.netcoding.niftyparkour.commands.AdminMode;
 import net.netcoding.niftyparkour.commands.Checkpoint;
@@ -54,7 +55,7 @@ public class NiftyParkour extends BukkitPlugin {
 		new Damage(this);
 		new Move(this);
 		SIGN_MONITOR = new SignMonitor(this);
-		SIGN_MONITOR.addListener(new Signs(this), "spawn2", "warp2", "menu2", "checkpoint2");
+		SIGN_MONITOR.addListener(new Signs(this), Keys.SPAWN.toString(), Keys.WARP.toString(), Keys.MENU.toString(), Keys.CHECKPOINT.toString());
 		SIGN_MONITOR.start();
 	}
 
@@ -72,7 +73,7 @@ public class NiftyParkour extends BukkitPlugin {
 	}
 
 	public static void sendCheckpointSignUpdate(BukkitMojangProfile profile) {
-		SIGN_MONITOR.sendSignUpdate(profile, "checkpoint2");
+		SIGN_MONITOR.sendSignUpdate(profile, Keys.CHECKPOINT.toString());
 	}
 
 }
