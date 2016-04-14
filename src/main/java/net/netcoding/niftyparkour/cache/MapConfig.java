@@ -5,7 +5,9 @@ import net.netcoding.niftybukkit.yaml.BukkitConfig;
 import net.netcoding.niftycore.minecraft.scheduler.MinecraftScheduler;
 import net.netcoding.niftycore.util.StringUtil;
 import net.netcoding.niftycore.util.concurrent.ConcurrentList;
+import net.netcoding.niftycore.util.concurrent.ConcurrentSet;
 import net.netcoding.niftycore.yaml.annotations.Path;
+import net.netcoding.niftycore.yaml.exceptions.InvalidConfigurationException;
 import net.netcoding.niftyparkour.NiftyParkour;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -21,17 +23,19 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class MapConfig extends BukkitConfig {
+
+	private transient volatile boolean updating = false;
+	private transient ConcurrentSet<Location> updatedSigns = new ConcurrentSet<>();
 
 	@Path("locked")
 	private boolean locked = true;
 
 	@Path("spawn-point")
 	private Location spawnPoint = Config.DEFAULT_SPAWN;
-
-	private transient volatile boolean updating = false;
 
 	private ConcurrentList<Location> checkpoints = new ConcurrentList<>();
 
@@ -54,14 +58,14 @@ public class MapConfig extends BukkitConfig {
 		return Collections.unmodifiableList(this.checkpoints);
 	}
 
-	private HashSet<Block> getNearestBlocks(Location location, int radius, Material... materials) {
+	private static Set<Block> getNearestBlocks(Location location, int radius, Material... materials) {
 		final World world = location.getWorld();
-		HashSet<Material> materialList = new HashSet<>(Arrays.asList(materials));
-		HashSet<Block> blocks = new HashSet<>();
+		Set<Material> materialList = new HashSet<>(Arrays.asList(materials));
+		Set<Block> blocks = new HashSet<>();
 
-		for (int y = 1; y > -radius; y--) {
-			for (int x = 1; x > -radius; x--) {
-				for (int z = 1; z > -radius; z--) {
+		for (int y = radius; y > -radius; y--) {
+			for (int x = radius; x > -radius; x--) {
+				for (int z = radius; z > -radius; z--) {
 					int cy = location.getBlockY() + y;
 
 					if (cy < 0 || cy > world.getMaxHeight())
@@ -79,7 +83,7 @@ public class MapConfig extends BukkitConfig {
 	}
 
 	public Location getSpawnPoint() {
-		return spawnPoint;
+		return this.spawnPoint;
 	}
 
 	public boolean hasCheckpoint(int checkpoint) {
@@ -97,23 +101,23 @@ public class MapConfig extends BukkitConfig {
 	public void moveCheckpoint(final int checkpoint, final int newCheckpoint) {
 		if (this.isUpdating()) return;
 		if (checkpoint == newCheckpoint) return;
-		if (checkpoint < 0 || checkpoint > this.checkpoints.size()) return;
-		this.updating = true;
-		Location removed = this.checkpoints.remove(checkpoint);
+		if (checkpoint < 1 || checkpoint > this.checkpoints.size()) return;
+		if (newCheckpoint < 1 || newCheckpoint > this.checkpoints.size()) return;
+		Location removed = this.checkpoints.remove(checkpoint - 1);
 		this.checkpoints.add(newCheckpoint - 1, removed);
-		this.sendPlayerUpdate(checkpoint, newCheckpoint);
+		this.sendPlayerUpdate(checkpoint, newCheckpoint, false);
 	}
 
 	public void removeCheckpoint(int checkpoint) {
 		if (this.isUpdating()) return;
-		this.checkpoints.remove(checkpoint);
-		int total = this.checkpoints.size();
-
-		if (checkpoint < total)
-			this.sendPlayerUpdate(checkpoint, total);
+		if (checkpoint < 1 || checkpoint > this.checkpoints.size()) return;
+		this.checkpoints.remove(checkpoint - 1);
+		this.sendPlayerUpdate(checkpoint, this.checkpoints.size(), true);
 	}
 
-	private void sendPlayerUpdate(final int checkpoint, final int newCheckpoint) {
+	private void sendPlayerUpdate(final int checkpoint, final int newCheckpoint, final boolean delete) {
+		this.updating = true;
+
 		// Players
 		MinecraftScheduler.runAsync(new Runnable() {
 			@Override
@@ -123,18 +127,37 @@ public class MapConfig extends BukkitConfig {
 				File mapsDirectory = new File(pluginDirectory, "players");
 				String[] playerConfigs = mapsDirectory.list();
 				String mapName = getName();
+				int minimum = Math.min(checkpoint, newCheckpoint);
+				int maximum = Math.max(checkpoint, newCheckpoint);
 
 				// Update File Cache
 				for (String playerUUID : playerConfigs) {
-					PlayerConfig playerConfig = new PlayerConfig(plugin, UUID.fromString(playerUUID));
-					playerConfig.init();
+					PlayerConfig playerConfig = new PlayerConfig(plugin, UUID.fromString(playerUUID.replace(".yml", "")));
 
-					if (checkpoint < newCheckpoint)
-						playerConfig.removeCheckpoint(mapName, playerConfig.getCheckpoints().size());
-					else
-						playerConfig.addCheckpoint(mapName, playerConfig.getCheckpoints().size() + 1);
+					try {
+						playerConfig.init();
+						List<Integer> checkpoints = playerConfig.getCheckpoints(mapName);
+						boolean needsUpdate = false;
+						int pMaximum = 0;
 
-					playerConfig.save();
+						for (Integer pCheckpoint : checkpoints) {
+							pMaximum = Math.max(pMaximum, pCheckpoint);
+
+							if (pCheckpoint >= minimum)
+								needsUpdate = true;
+						}
+
+						if (needsUpdate && pMaximum < maximum) {
+							if (checkpoint <= newCheckpoint)
+								playerConfig.removeCheckpoint(mapName, pMaximum);
+							else if (checkpoint > newCheckpoint)
+								playerConfig.addCheckpoint(mapName, pMaximum + 1);
+
+							playerConfig.save();
+						}
+					} catch (InvalidConfigurationException icex) {
+						NiftyParkour.getPlugin(NiftyParkour.class).getLog().console("Unable to load player configuration file {0} for modification!", playerConfig.getFullName());
+					}
 				}
 
 				// Update Online Cache
@@ -145,44 +168,65 @@ public class MapConfig extends BukkitConfig {
 				MinecraftScheduler.schedule(new Runnable() {
 					@Override
 					public void run() {
-						if (checkpoint < newCheckpoint) {
-							for (int i = checkpoint; i < newCheckpoint; i++)
-								sendSignMoveUpdate(checkpoint, 1);
+						// Update Signs (Beware: Squirly Shit)
+						sendSignMoveUpdate(checkpoint, (newCheckpoint - checkpoint), delete);
+
+						if (checkpoint <= newCheckpoint) {
+							for (int i = checkpoint + 1; i <= newCheckpoint; i++)
+								sendSignMoveUpdate(i, -1, delete);
 						} else {
-							for (int i = checkpoint; i > newCheckpoint; i--)
-								sendSignMoveUpdate(checkpoint, -1);
+							for (int i = checkpoint - 1; i > newCheckpoint; i--)
+								sendSignMoveUpdate(i, 1, delete);
 						}
 
+						// Save Worlds
 						for (World world : Bukkit.getWorlds())
 							world.save();
 
+						// Update Online Players
+						for (UserParkourData userData : UserParkourData.getCache())
+							NiftyParkour.sendCheckpointSignUpdate(userData.getProfile());
+
+						// Clearout
 						save();
+						updatedSigns.clear();
 						updating = false;
 					}
 				});
 			}
-		}, 0);
+		});
 	}
 
-	private void sendSignMoveUpdate(int checkpoint, int add) {
-		Location location = this.checkpoints.get(checkpoint);
+	private void sendSignMoveUpdate(int checkpoint, int add, boolean delete) {
+		Location location = this.checkpoints.get(checkpoint - 1);
 		Chunk chunk = location.getChunk();
 
 		/*if (!chunk.isLoaded()) {
 			if (!chunk.load(false)) {
-				NiftyParkour.getPlugin(NiftyParkour.class).getLog().error(Bukkit.getConsoleSender(), "Unable to load chunk at checkpoint {0}!", checkpoint);
+				NiftyParkour.getPlugin(NiftyParkour.class).getLog().console("Unable to load chunk at checkpoint {0}!", checkpoint);
 				return;
 			}
 		}*/
 
-		HashSet<Block> blocks = this.getNearestBlocks(location, 7, Material.SIGN, Material.SIGN_POST, Material.WALL_SIGN);
+		Set<Block> blocks = getNearestBlocks(location, 10, Material.SIGN_POST, Material.WALL_SIGN);
 
 		for (Block block : blocks) {
 			Sign sign = (Sign)block.getState();
+			Location signLocation = sign.getLocation();
 
-			if ("[checkpoint2]".equalsIgnoreCase(sign.getLine(0))) {
-				Integer current = Integer.parseInt(sign.getLine(2));
-				sign.setLine(2, ("" + current + add));
+			if (!this.updatedSigns.contains(signLocation)) {
+				if (StringUtil.format("[{0}]", Keys.CHECKPOINT).equalsIgnoreCase(sign.getLine(0))) {
+					Integer current = Integer.parseInt(sign.getLine(2));
+
+					if (current == checkpoint) {
+						if (delete)
+							block.setType(Material.AIR);
+						else
+							sign.setLine(2, ("" + current + add));
+
+						this.updatedSigns.add(signLocation);
+					}
+				}
 			}
 		}
 
