@@ -13,12 +13,21 @@ public enum Keys {
 		this.key = key;
 	}
 
-	public static boolean isKey(Keys key, String compare) {
-		return key == valueOf(compare);
+	public static Keys getKey(String key) {
+		for (Keys real : values()) {
+			if (real.toString().equals(key))
+				return real;
+		}
+
+		return null;
 	}
 
 	public static boolean hasKey(String key) {
-		return valueOf(key) != null;
+		return getKey(key) != null;
+	}
+
+	public static boolean isKey(Keys key, String compare) {
+		return key == getKey(compare);
 	}
 
 	@Override
