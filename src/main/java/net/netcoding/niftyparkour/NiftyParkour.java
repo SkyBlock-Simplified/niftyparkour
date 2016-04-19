@@ -1,8 +1,9 @@
 package net.netcoding.niftyparkour;
 
+import net.netcoding.niftybukkit.minecraft.inventory.FakeInventory;
 import net.netcoding.niftybukkit.minecraft.BukkitPlugin;
 import net.netcoding.niftybukkit.mojang.BukkitMojangProfile;
-import net.netcoding.niftybukkit.signs.SignMonitor;
+import net.netcoding.niftybukkit.minecraft.signs.SignMonitor;
 import net.netcoding.niftyparkour.cache.Config;
 import net.netcoding.niftyparkour.cache.Keys;
 import net.netcoding.niftyparkour.cache.Maps;
@@ -13,6 +14,7 @@ import net.netcoding.niftyparkour.commands.Spawn;
 import net.netcoding.niftyparkour.listeners.Blocks;
 import net.netcoding.niftyparkour.listeners.Connections;
 import net.netcoding.niftyparkour.listeners.Damage;
+import net.netcoding.niftyparkour.listeners.Menus;
 import net.netcoding.niftyparkour.listeners.Signs;
 import org.bukkit.World;
 
@@ -21,6 +23,7 @@ public class NiftyParkour extends BukkitPlugin {
 	private static transient Config PLUGIN_CONFIG;
 	private static transient Maps MAPS;
 	private static transient SignMonitor SIGN_MONITOR;
+	private static transient FakeInventory MENU_INVENTORY;
 
 	@Override
 	public void onEnable() {
@@ -37,7 +40,7 @@ public class NiftyParkour extends BukkitPlugin {
 		for (World world : this.getServer().getWorlds()) {
 			world.setGameRuleValue("showDeathMessages", "false");
 			world.setGameRuleValue("doEntityDrops", "false");
-			world.setGameRuleValue("keepInventory", "false");
+			world.setGameRuleValue("keepInventory", "true");
 			world.setGameRuleValue("doMobLoot", "false");
 			world.setGameRuleValue("doMobSpawning", "false");
 		}
@@ -55,6 +58,10 @@ public class NiftyParkour extends BukkitPlugin {
 		SIGN_MONITOR = new SignMonitor(this);
 		SIGN_MONITOR.addListener(new Signs(this), Keys.SPAWN.toString(), Keys.WARP.toString(), Keys.MENU.toString(), Keys.CHECKPOINT.toString());
 		SIGN_MONITOR.start();
+		MENU_INVENTORY = new FakeInventory(this, new Menus(this));
+		MENU_INVENTORY.setAutoCancelled();
+		MENU_INVENTORY.setTitle("Maps");
+		MENU_INVENTORY.setItemOpener(getPluginConfig().getItemOpener());
 	}
 
 	@Override
@@ -64,6 +71,10 @@ public class NiftyParkour extends BukkitPlugin {
 
 	public static Maps getMaps() {
 		return MAPS;
+	}
+
+	public static FakeInventory getMenuInventory() {
+		return MENU_INVENTORY;
 	}
 
 	public static Config getPluginConfig() {

@@ -1,10 +1,10 @@
 package net.netcoding.niftyparkour.listeners;
 
 import net.netcoding.niftybukkit.minecraft.BukkitHelper;
-import net.netcoding.niftybukkit.signs.events.SignBreakEvent;
-import net.netcoding.niftybukkit.signs.events.SignCreateEvent;
-import net.netcoding.niftybukkit.signs.events.SignInteractEvent;
-import net.netcoding.niftybukkit.signs.events.SignUpdateEvent;
+import net.netcoding.niftybukkit.minecraft.signs.events.SignBreakEvent;
+import net.netcoding.niftybukkit.minecraft.signs.events.SignCreateEvent;
+import net.netcoding.niftybukkit.minecraft.signs.events.SignInteractEvent;
+import net.netcoding.niftybukkit.minecraft.signs.events.SignUpdateEvent;
 import net.netcoding.niftycore.minecraft.ChatColor;
 import net.netcoding.niftycore.util.StringUtil;
 import net.netcoding.niftyparkour.NiftyParkour;
@@ -15,7 +15,7 @@ import net.netcoding.niftyparkour.cache.UserParkourData;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class Signs extends BukkitHelper implements net.netcoding.niftybukkit.signs.SignListener {
+public class Signs extends BukkitHelper implements net.netcoding.niftybukkit.minecraft.signs.SignListener {
 
 	public Signs(JavaPlugin plugin) {
 		super(plugin);
