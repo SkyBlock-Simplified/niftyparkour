@@ -5,6 +5,7 @@ import net.netcoding.niftybukkit.minecraft.signs.events.SignBreakEvent;
 import net.netcoding.niftybukkit.minecraft.signs.events.SignCreateEvent;
 import net.netcoding.niftybukkit.minecraft.signs.events.SignInteractEvent;
 import net.netcoding.niftybukkit.minecraft.signs.events.SignUpdateEvent;
+import net.netcoding.niftybukkit.mojang.BukkitMojangProfile;
 import net.netcoding.niftycore.minecraft.ChatColor;
 import net.netcoding.niftycore.util.StringUtil;
 import net.netcoding.niftyparkour.NiftyParkour;
@@ -97,7 +98,8 @@ public class Signs extends BukkitHelper implements net.netcoding.niftybukkit.min
 
 	@Override
 	public void onSignInteract(SignInteractEvent event) {
-		UserParkourData userData = UserParkourData.getCache(event.getProfile());
+		BukkitMojangProfile profile = event.getProfile();
+		UserParkourData userData = UserParkourData.getCache(profile);
 		Player player = userData.getOfflinePlayer().getPlayer();
 
 		if (!this.hasPermissions(player, event.getKey())) {
@@ -106,11 +108,11 @@ public class Signs extends BukkitHelper implements net.netcoding.niftybukkit.min
 		}
 
 		try {
-			if (Keys.isKey(Keys.SPAWN, event.getKey())) {
+			if (Keys.isKey(Keys.SPAWN, event.getKey()))
 				userData.teleportToSpawn();
-			} else if (Keys.isKey(Keys.MENU, event.getKey())) {
-				// TODO: Open menu
-			} else {
+			else if (Keys.isKey(Keys.MENU, event.getKey()))
+				Menus.openMapSelection(profile);
+			else {
 				MapConfig map = NiftyParkour.getMaps().getMap(event.getLine(1));
 
 				if (Keys.isKey(Keys.WARP, event.getKey()))
