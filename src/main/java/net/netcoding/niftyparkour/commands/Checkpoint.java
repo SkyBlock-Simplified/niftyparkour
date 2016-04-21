@@ -60,18 +60,19 @@ public class Checkpoint extends BukkitCommand {
 
 			MapConfig map = NiftyParkour.getMaps().getMap(mapName);
 			UserParkourData userData = UserParkourData.getCache(profile);
+			boolean isAdmin = profile.getName().equals(sender.getName()) && userData.isAdminMode();
 			List<String> checkpointList = new ArrayList<>();
 
 			if (map.getCheckpoints().size() > 0) {
 				for (int i = 0; i < map.getCheckpoints().size(); i++) {
-					boolean has = userData.isAdminMode() || userData.getPlayerConfig().hasCheckpoint(map.getName(), i + 1);
-					checkpointList.add(StringUtil.format("{0}{1}", (has ? ChatColor.GREEN : ChatColor.RED), i + 1));
+					boolean has = userData.getPlayerConfig().hasCheckpoint(map.getName(), i + 1);
+					checkpointList.add(StringUtil.format("{0}{1}", (has ? ChatColor.GREEN : (isAdmin ? ChatColor.YELLOW : ChatColor.RED)), i + 1));
 				}
 			} else
 				checkpointList.add(StringUtil.format("{{0}}", "No checkpoints available!"));
 
-			String forWhom = (profile.getName().equals(sender.getName()) ? "" : StringUtil.format(" for {{0}}", map.getName()));
-			this.getLog().message(sender, "Checkpoints{0}: {1}", forWhom, StringUtil.implode(ChatColor.GRAY + ", ", checkpointList));
+			String forWhom = (profile.getName().equals(sender.getName()) ? "" : StringUtil.format(" for {{0}}", profile.getName()));
+			this.getLog().message(sender, "{{0}} checkpoints{1}: {2}", map.getName(), forWhom, StringUtil.implode(ChatColor.GRAY + ", ", checkpointList));
 		} else if (action.matches("^(add|(re)?move)$")) {
 			if (!this.hasPermissions(sender, "checkpoint", "manage")) {
 				this.getLog().error(sender, "You do not have permission to manage checkpoints!");
