@@ -50,7 +50,6 @@ public class Config extends BukkitConfig {
 
 		if (NiftyParkour.getMenuInventory() != null) {
 			NiftyParkour.getMenuInventory().closeAll();
-			NiftyParkour.getMenuInventory().setAutoCancelled();
 			NiftyParkour.getMenuInventory().setTitle("Maps");
 			NiftyParkour.getMenuInventory().setItemOpener(this.getItemOpener());
 		}

@@ -59,7 +59,6 @@ public class NiftyParkour extends BukkitPlugin {
 		SIGN_MONITOR.addListener(new Signs(this), Keys.SPAWN.toString(), Keys.WARP.toString(), Keys.MENU.toString(), Keys.CHECKPOINT.toString());
 		SIGN_MONITOR.start();
 		MENU_INVENTORY = new FakeInventory(this, new Menus(this));
-		MENU_INVENTORY.setAutoCancelled();
 		MENU_INVENTORY.setTitle("Maps");
 		MENU_INVENTORY.setItemOpener(getPluginConfig().getItemOpener());
 	}
