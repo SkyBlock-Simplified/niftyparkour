@@ -21,7 +21,12 @@ public class Map extends BukkitCommand {
 	public Map(JavaPlugin plugin) {
 		super(plugin, "map");
 		this.setPlayerOnly();
+		this.editUsage(1, "add", "<map>");
 		this.editUsage(1, "list", "");
+		this.editUsage(1, "lock", "<map>");
+		this.editUsage(1, "remove", "<map>");
+		this.editUsage(1, "setspawn", "<map>");
+		this.editUsage(1, "unlock", "<map>");
 	}
 
 	public static String parseMapName(String[] args, int index) {
