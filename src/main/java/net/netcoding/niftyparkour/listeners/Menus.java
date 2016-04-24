@@ -19,7 +19,9 @@ import org.bukkit.Material;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 public class Menus extends BukkitHelper implements FakeInventoryListener {
@@ -29,18 +31,25 @@ public class Menus extends BukkitHelper implements FakeInventoryListener {
 	}
 
 	public static void openMapSelection(BukkitMojangProfile profile) {
-		FakeInventoryInstance inventory = NiftyParkour.getMenuInventory().newInstance(profile);
+		FakeInventoryInstance instance = NiftyParkour.getMenuInventory().getInstance(profile);
+		instance.setTitle("Maps");
 		Map<String, MapConfig> maps = NiftyParkour.getMaps().getAllMaps();
+		List<ItemData> items = new ArrayList<>();
 
 		for (MapConfig map : maps.values()) {
 			ItemData item = getItem(Material.PAPER, (short)0, StringUtil.format("&r{0}{1}", ChatColor.GREEN, map.getName()), "");
 			item.putNbtPath("parkour.map", map.getName());
 			item.putNbtPath("parkour.action", "view");
 			item.putNbtPath("parkour.page", 1);
-			inventory.add(item);
+			items.add(item);
 		}
 
-		inventory.open();
+		if (instance.isOpen())
+			instance.update(items);
+		else {
+			instance.addAll(items);
+			instance.open();
+		}
 	}
 
 	private static ItemData getItem(Material material, short durability, String displayName, String lore) {
@@ -60,19 +69,20 @@ public class Menus extends BukkitHelper implements FakeInventoryListener {
 		ItemData clickedItem = event.getClickedItem(true);
 		BukkitMojangProfile profile = event.getProfile();
 		UserParkourData userData = UserParkourData.getCache(profile);
-		FakeInventoryInstance inventory = NiftyParkour.getMenuInventory().newInstance(profile);
+		FakeInventoryInstance instance = NiftyParkour.getMenuInventory().getInstance(profile);
 		String mapName = clickedItem.getNbtPath("parkour.map");
 		String action = clickedItem.getNbtPath("parkour.action");
 
 		switch (action) {
 			case "view":
+				List<ItemData> items = new ArrayList<>();
 				MapConfig map = NiftyParkour.getMaps().getMap(mapName);
 				PlayerConfig config = userData.getPlayerConfig();
-				inventory.setTitle(StringUtil.format("{0} Checkpoints", map.getName()));
+				instance.setTitle(StringUtil.format("{0} Checkpoints", map.getName()));
 				ItemData spawn = getItem(Material.COMPASS, (short)0, StringUtil.format("&r&a{0} Spawn", map.getName()), StringUtil.format("&3Go to {0} spawn", map.getName()));
 				spawn.putNbtPath("parkour.map", map.getName());
 				spawn.putNbtPath("parkour.action", "spawn");
-				inventory.add(spawn);
+				items.add(spawn);
 				int totalSize = Math.min(map.getCheckpoints().size(), 50);
 				int page = clickedItem.getNbtPath("parkour.page");
 				int start = 1 + ((page - 1) * 50);
@@ -85,20 +95,20 @@ public class Menus extends BukkitHelper implements FakeInventoryListener {
 					item.putNbtPath("parkour.map", map.getName());
 					item.putNbtPath("parkour.action", "checkpoint");
 					item.putNbtPath("parkour.checkpoint", i);
-					inventory.add(item);
+					items.add(item);
 				}
 
 				ItemData back = getItem(Material.CHEST, (short)0, StringUtil.format("&r&cBack"), StringUtil.format("&3Go back to map selection"));
 				back.putNbtPath("parkour.map", map.getName());
 				back.putNbtPath("parkour.action", "back");
-				inventory.add(back);
+				items.add(back);
 
 				if (page > 1) {
 					ItemData pageBack = getItem(Material.BOOK, (short)0, StringUtil.format("&r&cPage {0}", page), StringUtil.format("&3Go to page {0}", page));
 					pageBack.putNbtPath("parkour.map", map.getName());
 					pageBack.putNbtPath("parkour.action", "view");
 					pageBack.putNbtPath("parkour.page", page);
-					inventory.add(pageBack);
+					items.add(pageBack);
 				}
 
 				if (1 + (page * 50) <= totalSize) {
@@ -106,10 +116,10 @@ public class Menus extends BukkitHelper implements FakeInventoryListener {
 					pageNext.putNbtPath("parkour.map", map.getName());
 					pageNext.putNbtPath("parkour.action", "view");
 					pageNext.putNbtPath("parkour.page", page + 1);
-					inventory.add(pageNext);
+					items.add(pageNext);
 				}
 
-				inventory.open();
+				instance.update(items);
 				break;
 			case "back":
 				openMapSelection(profile);
@@ -120,7 +130,12 @@ public class Menus extends BukkitHelper implements FakeInventoryListener {
 				break;
 			case "checkpoint":
 				int checkpoint = clickedItem.getNbtPath("parkour.checkpoint");
-				userData.teleportTo(mapName, checkpoint);
+
+				if (userData.getPlayerConfig().hasCheckpoint(mapName, checkpoint))
+					userData.teleportTo(mapName, checkpoint);
+				else
+					event.setCancelled(true);
+
 				break;
 		}
 	}
