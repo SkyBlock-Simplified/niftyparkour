@@ -19,7 +19,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 
 public class Menus extends BukkitHelper implements FakeInventoryListener {
@@ -49,7 +49,7 @@ public class Menus extends BukkitHelper implements FakeInventoryListener {
 		itemMeta.setDisplayName(displayName);
 
 		if (StringUtil.notEmpty(lore))
-			itemMeta.setLore(Arrays.asList(lore));
+			itemMeta.setLore(Collections.singletonList(lore));
 
 		itemData.setItemMeta(itemMeta);
 		return itemData;
