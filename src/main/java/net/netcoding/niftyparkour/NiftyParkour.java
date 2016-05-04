@@ -1,9 +1,9 @@
 package net.netcoding.niftyparkour;
 
-import net.netcoding.niftybukkit.minecraft.inventory.FakeInventory;
 import net.netcoding.niftybukkit.minecraft.BukkitPlugin;
-import net.netcoding.niftybukkit.mojang.BukkitMojangProfile;
+import net.netcoding.niftybukkit.minecraft.inventory.FakeInventory;
 import net.netcoding.niftybukkit.minecraft.signs.SignMonitor;
+import net.netcoding.niftybukkit.mojang.BukkitMojangProfile;
 import net.netcoding.niftyparkour.cache.Config;
 import net.netcoding.niftyparkour.cache.Keys;
 import net.netcoding.niftyparkour.cache.Maps;
