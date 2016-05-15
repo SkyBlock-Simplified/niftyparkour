@@ -50,6 +50,11 @@ public class MapConfig extends BukkitConfig {
 		this.checkpoints.add(location);
 	}
 
+	void disable() {
+		File mapFile = new File(this.getParentDirectory(), this.getFullName());
+		mapFile.renameTo(new File(this.getParentDirectory(), this.getFullName() + ".disabled"));
+	}
+
 	public Location getCheckpoint(int checkpoint) {
 		return this.checkpoints.get(checkpoint - 1);
 	}
