@@ -22,6 +22,7 @@ public class Checkpoint extends BukkitCommand {
 		super(plugin, "checkpoint");
 		this.setPlayerOnly();
 		this.setMinimumArgsLength(2);
+		this.editUsage(1, "add", "<map>");
 		this.editUsage(1, "list", "[player] <map>");
 		this.editUsage(1, "move", "<number> <new number> <map>");
 		this.editUsage(1, "remove", "<number> <map>");
