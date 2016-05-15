@@ -190,7 +190,7 @@ public class MapConfig extends BukkitConfig {
 
 						// Update Online Players
 						for (UserParkourData userData : UserParkourData.getCache())
-							NiftyParkour.sendCheckpointSignUpdate(userData.getProfile());
+							NiftyParkour.sendSignUpdate(userData.getProfile(), Keys.CHECKPOINT);
 
 						// Clearout
 						save();
