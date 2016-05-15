@@ -27,6 +27,7 @@ public class Map extends BukkitCommand {
 		this.editUsage(1, "lock", "<map>");
 		this.editUsage(1, "remove", "<map>");
 		this.editUsage(1, "setspawn", "<map>");
+		this.editUsage(1, "spawn", "");
 		this.editUsage(1, "unlock", "<map>");
 	}
 
