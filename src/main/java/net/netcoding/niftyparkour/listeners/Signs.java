@@ -148,20 +148,29 @@ public class Signs extends BukkitHelper implements net.netcoding.niftybukkit.min
 			event.setLine(2, this.colorfy("open up the"));
 			event.setLine(3, this.colorfy("menu"));
 		} else {
-			MapConfig map = NiftyParkour.getMaps().getMap(event.getLine(1));
+			String mapName = event.getLine(1);
 			event.setLine(0, this.colorfy((Keys.isKey(Keys.WARP, event.getKey()) ? "Warp" : "Checkpoint"), true));
-			event.setLine(1, map.getName());
+			event.setLine(1, mapName);
 
-			if (Keys.isKey(Keys.CHECKPOINT, event.getKey())) {
-				UserParkourData userData = UserParkourData.getCache(event.getProfile());
-				Integer checkpoint = Integer.parseInt(event.getLine(2));
-				boolean hasCheckpoint = userData.getPlayerConfig().hasCheckpoint(map.getName(), checkpoint);
+			if (NiftyParkour.getMaps().hasMap(mapName)) {
+				MapConfig map = NiftyParkour.getMaps().getMap(mapName);
 
-				if (userData.isAdminMode())
-					event.setLine(3, this.colorfy("Admin Mode", true));
-				else
-					event.setLine(3, this.colorfy(StringUtil.format("{0}ocked", (hasCheckpoint ? "Unl" : "L")), false, !hasCheckpoint));
-			}
+				if (Keys.isKey(Keys.CHECKPOINT, event.getKey())) {
+					UserParkourData userData = UserParkourData.getCache(event.getProfile());
+					Integer checkpoint = Integer.parseInt(event.getLine(2));
+
+					if (map.hasCheckpoint(checkpoint)) {
+						boolean hasCheckpoint = userData.getPlayerConfig().hasCheckpoint(map.getName(), checkpoint);
+
+						if (userData.isAdminMode())
+							event.setLine(3, this.colorfy("Admin Mode", true));
+						else
+							event.setLine(3, this.colorfy(StringUtil.format("{0}ocked", (hasCheckpoint ? "Unl" : "L")), false, !hasCheckpoint));
+					} else
+						event.setLine(3, this.colorfy("!! Checkpoint !!", true, true));
+				}
+			} else
+				event.setLine(3, this.colorfy("!! Map !!", true, true));
 		}
 	}
 
