@@ -6,6 +6,7 @@ import net.netcoding.niftybukkit.mojang.BukkitMojangProfile;
 import net.netcoding.niftycore.minecraft.ChatColor;
 import net.netcoding.niftycore.util.StringUtil;
 import net.netcoding.niftyparkour.NiftyParkour;
+import net.netcoding.niftyparkour.cache.Keys;
 import net.netcoding.niftyparkour.cache.Maps;
 import net.netcoding.niftyparkour.cache.UserParkourData;
 import org.bukkit.command.CommandSender;
@@ -108,8 +109,15 @@ public class Map extends BukkitCommand {
 					return;
 				}
 
-				maps.addMap(mapName);
-				this.getLog().message(sender, "The map {{0}} has been created!", mapName);
+				if (maps.addMap(mapName)) {
+					for (BukkitMojangProfile other : NiftyBukkit.getBungeeHelper().getPlayerList()) {
+						NiftyParkour.sendSignUpdate(other, Keys.WARP);
+						NiftyParkour.sendSignUpdate(other, Keys.CHECKPOINT);
+					}
+
+					this.getLog().message(sender, "The map {{0}} has been created!", mapName);
+				} else
+					this.getLog().error(sender, "Something went wrong when creating map {{0}}!", mapName);
 			} else if (action.matches("^(remov|delet)e$")) {
 				// TODO: Request confirmation
 				//NiftyParkour.getMaps().removeMap(mapName);
