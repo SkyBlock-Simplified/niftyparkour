@@ -30,7 +30,7 @@ public class Maps extends BukkitHelper {
 		}
 	}
 
-	public void addMap(String mapName) {
+	public boolean addMap(String mapName) {
 		if (!this.maps.containsKey(mapName)) {
 			MapConfig config = new MapConfig(this.getPlugin(), mapName);
 
@@ -38,9 +38,8 @@ public class Maps extends BukkitHelper {
 				config.init();
 			} catch (Exception ex) {
 				this.getLog().console("Failed to load map file {0}, disabling map!", ex, mapName);
-				File mapFile = new File(mapName);
-				mapFile.renameTo(new File(mapName + ".disabled"));
-				return;
+				config.disable();
+				return false;
 			}
 
 			try {
@@ -51,6 +50,8 @@ public class Maps extends BukkitHelper {
 
 			this.maps.put(config.getName(), config);
 		}
+
+		return true;
 	}
 
 	public boolean checkExists(String mapName) {
