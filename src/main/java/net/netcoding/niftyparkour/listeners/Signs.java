@@ -113,22 +113,31 @@ public class Signs extends BukkitHelper implements net.netcoding.niftybukkit.min
 			else if (Keys.isKey(Keys.MENU, event.getKey()))
 				Menus.openMapSelection(profile);
 			else {
-				MapConfig map = NiftyParkour.getMaps().getMap(event.getLine(1));
+				String mapName = event.getLine(1);
 
-				if (Keys.isKey(Keys.WARP, event.getKey()))
-					userData.teleportTo(map.getName());
-				else if (Keys.isKey(Keys.CHECKPOINT, event.getKey())) {
-					int checkpoint = Integer.parseInt(event.getLine(2));
-					PlayerConfig config = userData.getPlayerConfig();
-					boolean has = config.hasCheckpoint(map.getName(), checkpoint);
+				if (NiftyParkour.getMaps().hasMap(mapName)) {
+					MapConfig map = NiftyParkour.getMaps().getMap(event.getLine(1));
 
-					if (!has) {
-						config.addCheckpoint(map.getName(), checkpoint);
-						config.save();
+					if (Keys.isKey(Keys.WARP, event.getKey()))
+						userData.teleportTo(map.getName());
+					else if (Keys.isKey(Keys.CHECKPOINT, event.getKey())) {
+						int checkpoint = Integer.parseInt(event.getLine(2));
+
+						if (map.hasCheckpoint(checkpoint)) {
+							PlayerConfig config = userData.getPlayerConfig();
+							boolean has = config.hasCheckpoint(map.getName(), checkpoint);
+
+							if (!has) {
+								config.addCheckpoint(map.getName(), checkpoint);
+								config.save();
+							}
+
+							this.getLog().message(player, "Checkpoint {{0}}{1} unlocked for {{2}}!", checkpoint, (has ? " already" : ""), map.getName());
+						} else
+							this.getLog().error(player, "CHeckpoint {{0}} does not exist for {{1}}!", checkpoint, map.getName());
 					}
-
-					this.getLog().message(player, "Checkpoint {{0}}{1} unlocked for {{2}}!", checkpoint, (has ? " already" : ""), map.getName());
-				}
+				} else
+					this.getLog().error(player, "Unable to interact with sign! Invalid map {{0}}!", mapName);
 			}
 		} catch (Exception ex) {
 			this.getLog().error(player, "Unable to interact with sign! Please notify staff!", ex);
@@ -167,10 +176,11 @@ public class Signs extends BukkitHelper implements net.netcoding.niftybukkit.min
 						else
 							event.setLine(3, this.colorfy(StringUtil.format("{0}ocked", (hasCheckpoint ? "Unl" : "L")), false, !hasCheckpoint));
 					} else
-						event.setLine(3, this.colorfy("!! Checkpoint !!", true, true));
-				}
+						event.setLine(3, this.colorfy("!! CP !!", true, true));
+				} else
+					event.setLine(3, "");
 			} else
-				event.setLine(3, this.colorfy("!! Map !!", true, true));
+				event.setLine(3, this.colorfy("!! MAP !!", true, true));
 		}
 	}
 
