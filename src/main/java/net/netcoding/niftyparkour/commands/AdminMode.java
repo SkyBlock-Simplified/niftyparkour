@@ -5,6 +5,7 @@ import net.netcoding.niftybukkit.minecraft.BukkitCommand;
 import net.netcoding.niftybukkit.mojang.BukkitMojangProfile;
 import net.netcoding.niftycore.util.ListUtil;
 import net.netcoding.niftyparkour.NiftyParkour;
+import net.netcoding.niftyparkour.cache.Keys;
 import net.netcoding.niftyparkour.cache.UserParkourData;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -39,7 +40,7 @@ public class AdminMode extends BukkitCommand {
 		UserParkourData userData = UserParkourData.getCache(profile);
 		userData.toggleAdminMode();
 		this.getLog().message(sender, "{{0}} is no{1} in admin mode.", profile.getName(), (userData.isAdminMode() ? "w" : " longer"));
-		NiftyParkour.sendCheckpointSignUpdate(profile);
+		NiftyParkour.sendSignUpdate(profile, Keys.CHECKPOINT);
 	}
 
 }
