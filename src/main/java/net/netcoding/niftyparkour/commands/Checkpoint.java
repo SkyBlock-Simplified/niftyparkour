@@ -7,6 +7,7 @@ import net.netcoding.niftycore.minecraft.ChatColor;
 import net.netcoding.niftycore.mojang.exceptions.ProfileNotFoundException;
 import net.netcoding.niftycore.util.StringUtil;
 import net.netcoding.niftyparkour.NiftyParkour;
+import net.netcoding.niftyparkour.cache.Keys;
 import net.netcoding.niftyparkour.cache.MapConfig;
 import net.netcoding.niftyparkour.cache.UserParkourData;
 import org.bukkit.command.CommandSender;
@@ -150,6 +151,9 @@ public class Checkpoint extends BukkitCommand {
 					this.getLog().error(sender, "The value {{0}} must be a valid integer!", args[1]);
 				}
 			}
+
+			for (BukkitMojangProfile other : NiftyBukkit.getBungeeHelper().getPlayerList())
+				NiftyParkour.sendSignUpdate(other, Keys.CHECKPOINT);
 
 			map.save();
 		} else
