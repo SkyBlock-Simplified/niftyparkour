@@ -80,8 +80,8 @@ public class NiftyParkour extends BukkitPlugin {
 		return PLUGIN_CONFIG;
 	}
 
-	public static void sendCheckpointSignUpdate(BukkitMojangProfile profile) {
-		SIGN_MONITOR.sendSignUpdate(profile, Keys.CHECKPOINT.toString());
+	public static void sendSignUpdate(BukkitMojangProfile profile, Keys key) {
+		SIGN_MONITOR.sendSignUpdate(profile, key.toString());
 	}
 
 }
