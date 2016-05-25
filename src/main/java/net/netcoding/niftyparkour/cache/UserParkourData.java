@@ -105,18 +105,20 @@ public class UserParkourData extends BukkitMojangCache<BukkitMojangProfile> {
 	}
 
 	private void teleportTo(Location location) {
-		Player player = this.getOfflinePlayer().getPlayer();
-		this.resetSecondsOnFire();
-		player.setFireTicks(0);
-		player.setHealth(player.getMaxHealth());
-		player.setExhaustion(0f);
-		player.setFallDistance(0f);
-		Collection<PotionEffect> potions = player.getActivePotionEffects();
+		if (this.isOnlineLocally()) {
+			Player player = this.getOfflinePlayer().getPlayer();
+			this.resetSecondsOnFire();
+			player.setFireTicks(0);
+			player.setHealth(player.getMaxHealth());
+			player.setExhaustion(0f);
+			player.setFallDistance(0f);
+			Collection<PotionEffect> potions = player.getActivePotionEffects();
 
-		for (PotionEffect potion : potions)
-			player.removePotionEffect(potion.getType());
+			for (PotionEffect potion : potions)
+				player.removePotionEffect(potion.getType());
 
-		this.getOfflinePlayer().getPlayer().teleport(location);
+			this.getOfflinePlayer().getPlayer().teleport(location);
+		}
 	}
 
 	public void teleportToSpawn() {
