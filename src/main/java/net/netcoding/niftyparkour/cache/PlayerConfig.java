@@ -4,16 +4,16 @@ import net.netcoding.niftybukkit.mojang.BukkitMojangProfile;
 import net.netcoding.niftybukkit.yaml.BukkitConfig;
 import net.netcoding.niftycore.util.StringUtil;
 import net.netcoding.niftycore.util.concurrent.ConcurrentList;
+import net.netcoding.niftycore.util.concurrent.ConcurrentMap;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerConfig extends BukkitConfig {
 
-	private ConcurrentHashMap<String, ConcurrentList<Integer>> checkpoints = new ConcurrentHashMap<>();
+	private ConcurrentMap<String, ConcurrentList<Integer>> checkpoints = new ConcurrentMap<>();
 
 	public PlayerConfig(JavaPlugin plugin, BukkitMojangProfile profile) {
 		this(plugin, profile.getUniqueId());

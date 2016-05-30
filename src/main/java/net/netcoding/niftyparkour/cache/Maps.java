@@ -1,16 +1,16 @@
 package net.netcoding.niftyparkour.cache;
 
 import net.netcoding.niftybukkit.minecraft.BukkitHelper;
+import net.netcoding.niftycore.util.concurrent.ConcurrentMap;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.util.Collections;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class Maps extends BukkitHelper {
 
-	private final ConcurrentHashMap<String, MapConfig> maps = new ConcurrentHashMap<>();
+	private final ConcurrentMap<String, MapConfig> maps = new ConcurrentMap<>();
 
 	public Maps(JavaPlugin plugin) {
 		super(plugin);
