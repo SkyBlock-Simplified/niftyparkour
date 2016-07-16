@@ -108,7 +108,7 @@ public class UserParkourData extends MinecraftMojangCache<MinecraftMojangProfile
 			player.setHealth(player.getMaxHealth());
 			player.setExhaustion(0f);
 			player.setFallDistance(0f);
-			player.getActivePotionEffects().stream().forEach(potion -> player.removePotionEffect(potion.getType()));
+			player.getActivePotionEffects().forEach(potion -> player.removePotionEffect(potion.getType()));
 			player.teleport(location);
 		}
 	}
