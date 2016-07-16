@@ -1,20 +1,19 @@
-package net.netcoding.niftyparkour.cache;
+package net.netcoding.nifty.parkour.cache;
 
-import net.netcoding.niftybukkit.NiftyBukkit;
-import net.netcoding.niftybukkit.minecraft.items.ItemData;
-import net.netcoding.niftybukkit.util.LocationUtil;
-import net.netcoding.niftybukkit.yaml.BukkitConfig;
-import net.netcoding.niftycore.yaml.annotations.Comment;
-import net.netcoding.niftycore.yaml.annotations.Path;
-import net.netcoding.niftycore.yaml.exceptions.InvalidConfigurationException;
-import net.netcoding.niftyparkour.NiftyParkour;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.plugin.java.JavaPlugin;
+import net.netcoding.nifty.common.Nifty;
+import net.netcoding.nifty.common.api.plugin.MinecraftPlugin;
+import net.netcoding.nifty.common.minecraft.inventory.item.ItemStack;
+import net.netcoding.nifty.common.minecraft.region.Location;
+import net.netcoding.nifty.common.util.LocationUtil;
+import net.netcoding.nifty.common.yaml.BukkitConfig;
+import net.netcoding.nifty.core.yaml.annotations.Comment;
+import net.netcoding.nifty.core.yaml.annotations.Path;
+import net.netcoding.nifty.core.yaml.exceptions.InvalidConfigurationException;
+import net.netcoding.nifty.parkour.NiftyParkour;
 
 public class Config extends BukkitConfig {
 
-	public static final Location DEFAULT_SPAWN = Bukkit.getWorlds().get(0).getSpawnLocation();
+	public static final Location DEFAULT_SPAWN = Nifty.getServer().getWorlds().get(0).getSpawnLocation();
 
 	@Path("spawn-point")
 	@Comment("Where players spawn server wide")
@@ -26,9 +25,9 @@ public class Config extends BukkitConfig {
 
 	@Path("item-opener")
 	@Comment("Adds item to your inventory to open the chest of servers")
-	private ItemData itemOpener = NiftyBukkit.getItemDatabase().get("0");
+	private ItemStack itemOpener = Nifty.getItemDatabase().get("0");
 
-	public Config(JavaPlugin plugin) {
+	public Config(MinecraftPlugin plugin) {
 		super (plugin.getDataFolder(), "config");
 	}
 
@@ -36,7 +35,7 @@ public class Config extends BukkitConfig {
 		return this.fireBurnDuration + 1;
 	}
 
-	public ItemData getItemOpener() {
+	public ItemStack getItemOpener() {
 		return this.itemOpener;
 	}
 

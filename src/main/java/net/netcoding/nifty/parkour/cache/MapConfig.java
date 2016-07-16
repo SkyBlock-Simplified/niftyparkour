@@ -1,22 +1,22 @@
-package net.netcoding.niftyparkour.cache;
+package net.netcoding.nifty.parkour.cache;
 
-import net.netcoding.niftybukkit.util.LocationUtil;
-import net.netcoding.niftybukkit.yaml.BukkitConfig;
-import net.netcoding.niftycore.minecraft.scheduler.MinecraftScheduler;
-import net.netcoding.niftycore.util.StringUtil;
-import net.netcoding.niftycore.util.concurrent.ConcurrentList;
-import net.netcoding.niftycore.util.concurrent.ConcurrentSet;
-import net.netcoding.niftycore.yaml.annotations.Path;
-import net.netcoding.niftycore.yaml.exceptions.InvalidConfigurationException;
-import net.netcoding.niftyparkour.NiftyParkour;
-import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
-import org.bukkit.plugin.java.JavaPlugin;
+import net.netcoding.nifty.common.Nifty;
+import net.netcoding.nifty.common.api.plugin.MinecraftPlugin;
+import net.netcoding.nifty.common.minecraft.block.Block;
+import net.netcoding.nifty.common.minecraft.block.state.Sign;
+import net.netcoding.nifty.common.minecraft.material.Material;
+import net.netcoding.nifty.common.minecraft.region.Chunk;
+import net.netcoding.nifty.common.minecraft.region.Location;
+import net.netcoding.nifty.common.minecraft.region.World;
+import net.netcoding.nifty.common.util.LocationUtil;
+import net.netcoding.nifty.common.yaml.BukkitConfig;
+import net.netcoding.nifty.core.util.StringUtil;
+import net.netcoding.nifty.core.util.concurrent.Concurrent;
+import net.netcoding.nifty.core.util.concurrent.ConcurrentList;
+import net.netcoding.nifty.core.util.concurrent.ConcurrentSet;
+import net.netcoding.nifty.core.yaml.annotations.Path;
+import net.netcoding.nifty.core.yaml.exceptions.InvalidConfigurationException;
+import net.netcoding.nifty.parkour.NiftyParkour;
 
 import java.io.File;
 import java.util.Arrays;
@@ -29,7 +29,7 @@ import java.util.UUID;
 public class MapConfig extends BukkitConfig {
 
 	private transient volatile boolean updating = false;
-	private transient ConcurrentSet<Location> updatedSigns = new ConcurrentSet<>();
+	private transient ConcurrentSet<Location> updatedSigns = Concurrent.newSet();
 
 	@Path("locked")
 	private boolean locked = true;
@@ -37,9 +37,9 @@ public class MapConfig extends BukkitConfig {
 	@Path("spawn-point")
 	private Location spawnPoint = Config.DEFAULT_SPAWN;
 
-	private ConcurrentList<Location> checkpoints = new ConcurrentList<>();
+	private ConcurrentList<Location> checkpoints = Concurrent.newList();
 
-	public MapConfig(JavaPlugin plugin, String name) {
+	public MapConfig(MinecraftPlugin plugin, String name) {
 		super(plugin.getDataFolder(), StringUtil.format("maps/{0}", name));
 	}
 
@@ -124,81 +124,73 @@ public class MapConfig extends BukkitConfig {
 		this.updating = true;
 
 		// Players
-		MinecraftScheduler.runAsync(new Runnable() {
-			@Override
-			public void run() {
-				JavaPlugin plugin = NiftyParkour.getPlugin(NiftyParkour.class);
-				File pluginDirectory = plugin.getDataFolder();
-				File mapsDirectory = new File(pluginDirectory, "players");
-				String[] playerConfigs = mapsDirectory.list();
-				String mapName = getName();
-				int minimum = Math.min(checkpoint, newCheckpoint);
-				int maximum = Math.max(checkpoint, newCheckpoint);
+		Nifty.getScheduler().runAsync(() -> {
+			File pluginDirectory = MapConfig.this.getParentDirectory();
+			File mapsDirectory = new File(pluginDirectory, "players");
+			String[] playerConfigs = mapsDirectory.list();
+			String mapName = getName();
+			int minimum = Math.min(checkpoint, newCheckpoint);
+			int maximum = Math.max(checkpoint, newCheckpoint);
 
-				// Update File Cache
-				for (String playerUUID : playerConfigs) {
-					PlayerConfig playerConfig = new PlayerConfig(plugin, UUID.fromString(playerUUID.replace(".yml", "")));
+			// Update File Cache
+			for (String playerUUID : playerConfigs) {
+				PlayerConfig playerConfig = new PlayerConfig(NiftyParkour.getPlugin(NiftyParkour.class), UUID.fromString(playerUUID.replace(".yml", "")));
 
-					try {
-						playerConfig.init();
-						List<Integer> checkpoints = playerConfig.getCheckpoints(mapName);
-						boolean needsUpdate = false;
-						int pMaximum = 0;
+				try {
+					playerConfig.init();
+					List<Integer> checkpoints1 = playerConfig.getCheckpoints(mapName);
+					boolean needsUpdate = false;
+					int pMaximum = 0;
 
-						for (Integer pCheckpoint : checkpoints) {
-							pMaximum = Math.max(pMaximum, pCheckpoint);
+					for (Integer pCheckpoint : checkpoints1) {
+						pMaximum = Math.max(pMaximum, pCheckpoint);
 
-							if (pCheckpoint >= minimum)
-								needsUpdate = true;
-						}
-
-						if (needsUpdate && pMaximum < maximum) {
-							if (checkpoint <= newCheckpoint)
-								playerConfig.removeCheckpoint(mapName, pMaximum);
-							else if (checkpoint > newCheckpoint)
-								playerConfig.addCheckpoint(mapName, pMaximum + 1);
-
-							playerConfig.save();
-						}
-					} catch (InvalidConfigurationException icex) {
-						NiftyParkour.getPlugin(NiftyParkour.class).getLog().console("Unable to load player configuration file {0} for modification!", playerConfig.getFullName());
+						if (pCheckpoint >= minimum)
+							needsUpdate = true;
 					}
+
+					if (needsUpdate && pMaximum < maximum) {
+						if (checkpoint <= newCheckpoint)
+							playerConfig.removeCheckpoint(mapName, pMaximum);
+						else if (checkpoint > newCheckpoint)
+							playerConfig.addCheckpoint(mapName, pMaximum + 1);
+
+						playerConfig.save();
+					}
+				} catch (InvalidConfigurationException icex) {
+					NiftyParkour.getPlugin(NiftyParkour.class).getLog().console("Unable to load player configuration file {0} for modification!", playerConfig.getFullName());
+				}
+			}
+
+			// Update Online Cache
+			for (UserParkourData userData : UserParkourData.getCache())
+				userData.getPlayerConfig().reload();
+
+			// Signs
+			Nifty.getScheduler().schedule(() -> {
+				// Update Signs (Beware: Squirly Shit)
+				sendSignMoveUpdate(checkpoint, (newCheckpoint - checkpoint), delete);
+
+				if (checkpoint <= newCheckpoint) {
+					for (int i = checkpoint + 1; i <= newCheckpoint; i++)
+						sendSignMoveUpdate(i, -1, delete);
+				} else {
+					for (int i = checkpoint - 1; i > newCheckpoint; i--)
+						sendSignMoveUpdate(i, 1, delete);
 				}
 
-				// Update Online Cache
+				// Save Worlds
+				Nifty.getServer().getWorlds().forEach(World::save);
+
+				// Update Online Players
 				for (UserParkourData userData : UserParkourData.getCache())
-					userData.getPlayerConfig().reload();
+					NiftyParkour.sendSignUpdate(userData.getProfile(), Keys.CHECKPOINT);
 
-				// Signs
-				MinecraftScheduler.schedule(new Runnable() {
-					@Override
-					public void run() {
-						// Update Signs (Beware: Squirly Shit)
-						sendSignMoveUpdate(checkpoint, (newCheckpoint - checkpoint), delete);
-
-						if (checkpoint <= newCheckpoint) {
-							for (int i = checkpoint + 1; i <= newCheckpoint; i++)
-								sendSignMoveUpdate(i, -1, delete);
-						} else {
-							for (int i = checkpoint - 1; i > newCheckpoint; i--)
-								sendSignMoveUpdate(i, 1, delete);
-						}
-
-						// Save Worlds
-						for (World world : Bukkit.getWorlds())
-							world.save();
-
-						// Update Online Players
-						for (UserParkourData userData : UserParkourData.getCache())
-							NiftyParkour.sendSignUpdate(userData.getProfile(), Keys.CHECKPOINT);
-
-						// Clearout
-						save();
-						updatedSigns.clear();
-						updating = false;
-					}
-				});
-			}
+				// Clearout
+				save();
+				updatedSigns.clear();
+				updating = false;
+			});
 		});
 	}
 
@@ -235,7 +227,7 @@ public class MapConfig extends BukkitConfig {
 			}
 		}
 
-		chunk.unload(true, true);
+		chunk.unload();
 	}
 
 	public void setLocked(boolean value) {

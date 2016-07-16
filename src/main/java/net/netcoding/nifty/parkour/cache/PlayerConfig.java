@@ -1,11 +1,12 @@
-package net.netcoding.niftyparkour.cache;
+package net.netcoding.nifty.parkour.cache;
 
-import net.netcoding.niftybukkit.mojang.BukkitMojangProfile;
-import net.netcoding.niftybukkit.yaml.BukkitConfig;
-import net.netcoding.niftycore.util.StringUtil;
-import net.netcoding.niftycore.util.concurrent.ConcurrentList;
-import net.netcoding.niftycore.util.concurrent.ConcurrentMap;
-import org.bukkit.plugin.java.JavaPlugin;
+import net.netcoding.nifty.common.api.plugin.MinecraftPlugin;
+import net.netcoding.nifty.common.mojang.MinecraftMojangProfile;
+import net.netcoding.nifty.common.yaml.BukkitConfig;
+import net.netcoding.nifty.core.util.StringUtil;
+import net.netcoding.nifty.core.util.concurrent.Concurrent;
+import net.netcoding.nifty.core.util.concurrent.ConcurrentList;
+import net.netcoding.nifty.core.util.concurrent.ConcurrentMap;
 
 import java.util.Collections;
 import java.util.List;
@@ -13,19 +14,19 @@ import java.util.UUID;
 
 public class PlayerConfig extends BukkitConfig {
 
-	private ConcurrentMap<String, ConcurrentList<Integer>> checkpoints = new ConcurrentMap<>();
+	private ConcurrentMap<String, ConcurrentList<Integer>> checkpoints = Concurrent.newMap();
 
-	public PlayerConfig(JavaPlugin plugin, BukkitMojangProfile profile) {
+	public PlayerConfig(MinecraftPlugin plugin, MinecraftMojangProfile profile) {
 		this(plugin, profile.getUniqueId());
 	}
 
-	PlayerConfig(JavaPlugin plugin, UUID uniqueId) {
+	PlayerConfig(MinecraftPlugin plugin, UUID uniqueId) {
 		super(plugin.getDataFolder(), StringUtil.format("players/{0}", uniqueId));
 	}
 
 	public void addCheckpoint(String mapName, int checkpoint) {
 		if (!this.checkpoints.containsKey(mapName))
-			this.checkpoints.put(mapName, new ConcurrentList<>(Collections.singletonList(checkpoint)));
+			this.checkpoints.put(mapName, Concurrent.newList(checkpoint));
 		else {
 			ConcurrentList<Integer> checkpoints = this.checkpoints.get(mapName);
 

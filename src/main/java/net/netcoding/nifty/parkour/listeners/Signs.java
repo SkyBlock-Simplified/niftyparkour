@@ -1,24 +1,25 @@
-package net.netcoding.niftyparkour.listeners;
+package net.netcoding.nifty.parkour.listeners;
 
-import net.netcoding.niftybukkit.minecraft.BukkitHelper;
-import net.netcoding.niftybukkit.minecraft.signs.events.SignBreakEvent;
-import net.netcoding.niftybukkit.minecraft.signs.events.SignCreateEvent;
-import net.netcoding.niftybukkit.minecraft.signs.events.SignInteractEvent;
-import net.netcoding.niftybukkit.minecraft.signs.events.SignUpdateEvent;
-import net.netcoding.niftybukkit.mojang.BukkitMojangProfile;
-import net.netcoding.niftycore.minecraft.ChatColor;
-import net.netcoding.niftycore.util.StringUtil;
-import net.netcoding.niftyparkour.NiftyParkour;
-import net.netcoding.niftyparkour.cache.Keys;
-import net.netcoding.niftyparkour.cache.MapConfig;
-import net.netcoding.niftyparkour.cache.PlayerConfig;
-import net.netcoding.niftyparkour.cache.UserParkourData;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
+import net.netcoding.nifty.common.api.plugin.MinecraftHelper;
+import net.netcoding.nifty.common.api.plugin.MinecraftPlugin;
+import net.netcoding.nifty.common.api.signs.SignListener;
+import net.netcoding.nifty.common.api.signs.events.SignBreakEvent;
+import net.netcoding.nifty.common.api.signs.events.SignCreateEvent;
+import net.netcoding.nifty.common.api.signs.events.SignInteractEvent;
+import net.netcoding.nifty.common.api.signs.events.SignUpdateEvent;
+import net.netcoding.nifty.common.minecraft.entity.living.human.Player;
+import net.netcoding.nifty.common.mojang.MinecraftMojangProfile;
+import net.netcoding.nifty.core.api.color.ChatColor;
+import net.netcoding.nifty.core.util.StringUtil;
+import net.netcoding.nifty.parkour.NiftyParkour;
+import net.netcoding.nifty.parkour.cache.Keys;
+import net.netcoding.nifty.parkour.cache.MapConfig;
+import net.netcoding.nifty.parkour.cache.PlayerConfig;
+import net.netcoding.nifty.parkour.cache.UserParkourData;
 
-public class Signs extends BukkitHelper implements net.netcoding.niftybukkit.minecraft.signs.SignListener {
+public final class Signs extends MinecraftHelper implements SignListener {
 
-	public Signs(JavaPlugin plugin) {
+	public Signs(MinecraftPlugin plugin) {
 		super(plugin);
 	}
 
@@ -98,7 +99,7 @@ public class Signs extends BukkitHelper implements net.netcoding.niftybukkit.min
 
 	@Override
 	public void onSignInteract(SignInteractEvent event) {
-		BukkitMojangProfile profile = event.getProfile();
+		MinecraftMojangProfile profile = event.getProfile();
 		UserParkourData userData = UserParkourData.getCache(profile);
 		Player player = userData.getOfflinePlayer().getPlayer();
 

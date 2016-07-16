@@ -1,18 +1,19 @@
-package net.netcoding.niftyparkour.cache;
+package net.netcoding.nifty.parkour.cache;
 
-import net.netcoding.niftybukkit.minecraft.BukkitHelper;
-import net.netcoding.niftycore.util.concurrent.ConcurrentMap;
-import org.bukkit.plugin.java.JavaPlugin;
+import net.netcoding.nifty.common.api.plugin.MinecraftHelper;
+import net.netcoding.nifty.common.api.plugin.MinecraftPlugin;
+import net.netcoding.nifty.core.util.concurrent.Concurrent;
+import net.netcoding.nifty.core.util.concurrent.ConcurrentMap;
 
 import java.io.File;
 import java.util.Collections;
 import java.util.Map;
 
-public class Maps extends BukkitHelper {
+public class Maps extends MinecraftHelper {
 
-	private final ConcurrentMap<String, MapConfig> maps = new ConcurrentMap<>();
+	private final ConcurrentMap<String, MapConfig> maps = Concurrent.newMap();
 
-	public Maps(JavaPlugin plugin) {
+	public Maps(MinecraftPlugin plugin) {
 		super(plugin);
 		File pluginDirectory = plugin.getDataFolder();
 		File mapsDirectory = new File(pluginDirectory, "maps");

@@ -4,7 +4,8 @@ website: ${project.url}
 author: ${author}
 
 main: ${project.groupId}.${project.artifactId}.${project.name}
-depend: [NiftyBukkit]
+depend: [NiftyLibrary]
+softdepend: [NiftyItems]
 
 commands:
   adminmode:
@@ -37,7 +38,9 @@ permissions:
         description: Allows you to access all checkpoint features
         children:
           niftyparkour.checkpoint:
-            description: Allows you to list checkpoints
+            description: Allows you to list, warp to and collect checkpoints
+          niftyparkour.checkpoint2:
+            description: Allows you to list, warp to and collect checkpoints temp
           niftyparkour.checkpoint.other:
             description: Allows you to list other players checkpoints
           niftyparkour.checkpoint.manage:
@@ -51,10 +54,10 @@ permissions:
             description: Allows you prevent and allow access to maps
           niftyparkour.map.manage:
             description: Allows you administer maps
-      niftyparkour.menu:
+      niftyparkour.menu2:
         description: Allows you to view the map/checkpoint menu
-      niftyparkour.spawn:
+      niftyparkour.spawn2:
         description: Allows you to warp to spawn
         default: true
-      niftyparkour.warp:
+      niftyparkour.warp2:
         description: Allows you to warp to maps

@@ -1,25 +1,28 @@
-package net.netcoding.niftyparkour;
+package net.netcoding.nifty.parkour;
 
-import net.netcoding.niftybukkit.minecraft.BukkitPlugin;
-import net.netcoding.niftybukkit.minecraft.inventory.FakeInventory;
-import net.netcoding.niftybukkit.minecraft.signs.SignMonitor;
-import net.netcoding.niftybukkit.mojang.BukkitMojangProfile;
-import net.netcoding.niftyparkour.cache.Config;
-import net.netcoding.niftyparkour.cache.Keys;
-import net.netcoding.niftyparkour.cache.Maps;
-import net.netcoding.niftyparkour.commands.AdminMode;
-import net.netcoding.niftyparkour.commands.Checkpoint;
-import net.netcoding.niftyparkour.commands.Map;
-import net.netcoding.niftyparkour.commands.Spawn;
-import net.netcoding.niftyparkour.listeners.Blocks;
-import net.netcoding.niftyparkour.listeners.Connections;
-import net.netcoding.niftyparkour.listeners.Damage;
-import net.netcoding.niftyparkour.listeners.Menus;
-import net.netcoding.niftyparkour.listeners.Signs;
-import org.bukkit.World;
+import net.netcoding.nifty.common.Nifty;
+import net.netcoding.nifty.common.api.inventory.FakeInventory;
+import net.netcoding.nifty.common.api.plugin.MinecraftPlugin;
+import net.netcoding.nifty.common.api.signs.SignMonitor;
+import net.netcoding.nifty.common.minecraft.region.World;
+import net.netcoding.nifty.common.mojang.MinecraftMojangProfile;
+import net.netcoding.nifty.core.api.plugin.PluginDescription;
+import net.netcoding.nifty.parkour.cache.Config;
+import net.netcoding.nifty.parkour.cache.Keys;
+import net.netcoding.nifty.parkour.cache.Maps;
+import net.netcoding.nifty.parkour.commands.AdminMode;
+import net.netcoding.nifty.parkour.commands.Checkpoint;
+import net.netcoding.nifty.parkour.commands.Map;
+import net.netcoding.nifty.parkour.commands.Spawn;
+import net.netcoding.nifty.parkour.listeners.Blocks;
+import net.netcoding.nifty.parkour.listeners.Connections;
+import net.netcoding.nifty.parkour.listeners.Damage;
+import net.netcoding.nifty.parkour.listeners.Menus;
+import net.netcoding.nifty.parkour.listeners.Signs;
 
-public class NiftyParkour extends BukkitPlugin {
+public class NiftyParkour extends MinecraftPlugin {
 
+	private PluginDescription description;
 	private static transient Config PLUGIN_CONFIG;
 	private static transient Maps MAPS;
 	private static transient SignMonitor SIGN_MONITOR;
@@ -37,7 +40,7 @@ public class NiftyParkour extends BukkitPlugin {
 		}
 
 		this.getLog().console("Registering Gamerules");
-		for (World world : this.getServer().getWorlds()) {
+		for (World world : Nifty.getServer().getWorlds()) {
 			world.setGameRuleValue("showDeathMessages", "false");
 			world.setGameRuleValue("doEntityDrops", "false");
 			world.setGameRuleValue("keepInventory", "true");
@@ -80,7 +83,7 @@ public class NiftyParkour extends BukkitPlugin {
 		return PLUGIN_CONFIG;
 	}
 
-	public static void sendSignUpdate(BukkitMojangProfile profile, Keys key) {
+	public static void sendSignUpdate(MinecraftMojangProfile profile, Keys key) {
 		SIGN_MONITOR.sendSignUpdate(profile, key.toString());
 	}
 

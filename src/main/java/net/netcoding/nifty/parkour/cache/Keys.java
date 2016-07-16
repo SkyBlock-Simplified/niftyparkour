@@ -1,4 +1,4 @@
-package net.netcoding.niftyparkour.cache;
+package net.netcoding.nifty.parkour.cache;
 
 public enum Keys {
 
